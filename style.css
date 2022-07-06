@@ -23,3 +23,11 @@ body{
     width: 3rem;
     border-radius: 50%;
   }
+
+  .black{
+    background-color: black;
+  }
+
+  .white{
+    background-color: white;
+  }
