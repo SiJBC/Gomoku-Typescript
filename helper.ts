@@ -9,13 +9,16 @@ export interface MapBoard {
     [key: string]: TILECOLOR
 }
 
-
-export const colorTile  = (arg: string): string => {
-    return arg === TILECOLOR.BLACK ? TILECOLOR.BLACK.toLowerCase() : TILECOLOR.WHITE.toLowerCase()
-}
-
 export const toggleColor = (arg: string): string => {
     return arg === TILECOLOR.BLACK ? TILECOLOR.WHITE : TILECOLOR.BLACK
+}
+
+export const checkIfWin = (map: MapBoard): boolean => {
+    return true
+}
+
+export const checkIfTileIsEmpty = (map: MapBoard, coOrdinate: string): boolean => {
+    return map[coOrdinate] === TILECOLOR.EMPTY
 }
 
 export const mapBoard = (length: number): MapBoard => {
@@ -28,12 +31,14 @@ export const mapBoard = (length: number): MapBoard => {
     return map
 }
 
-export const returnNeighbours = (selectedTile: string): string[] => {
+
+export const returnNeighbours = (selectedTile: string, boardLength: number): string[] => {
     console.log(selectedTile)
+    const range = boardLength - 1
+    console.log(range)
     const {x, y} = JSON.parse(selectedTile)
-    if((x > 0 && x < 9) && (y > 0 && y < 9))
+    if((x > 0 && x < range) && (y > 0 && y < range))
     {
-        console.log('a')
             return [`{x:${x-1}, y:${y-1}}`,
                     `{x:${x-1}, y:${y}}`,
                     `{x:${x-1}, y:${y+1}}`,
@@ -44,9 +49,8 @@ export const returnNeighbours = (selectedTile: string): string[] => {
                     `{x:${x+1}, y:${y+1}}`]
     
     }
-    if((x == 0) && (y > 0 && y < 9))
+    if((x == 0) && (y > 0 && y < range))
     {
-        console.log('b')
             return [`{x:${x}, y:${y-1}}`,
                     `{x:${x}, y:${y+1}}`,
                     `{x:${x+1}, y:${y-1}}`,
@@ -55,9 +59,8 @@ export const returnNeighbours = (selectedTile: string): string[] => {
             ]       
     
     }
-    if((x > 0 && x < 9) && (y == 0))
+    if((x > 0 && x < range) && (y == 0))
     {
-        console.log('c')
             return [
             `{x:${x-1}, y:${y}}`,
             `{x:${x-1}, y:${y+1}}`,
@@ -67,19 +70,36 @@ export const returnNeighbours = (selectedTile: string): string[] => {
             ]       
     
     }
-
     if((x == 0) && (y == 0)){
+        console.log('d')
         return[
             `{x:${x}, y:${y+1}}`,
             `{x:${x+1}, y:${y}}`,
             `{x:${x+1}, y:${y+1}}`,
         ]
     }
-    if((x == 9) && (y > 0)){
+    if((x == range) && (y > 0)){
+        console.log('e')
         return[
             `{x:${x-1}, y:${y}}`,
             `{x:${x-1}, y:${y+1}}`,
             `{x:${x}, y:${y+1}}`,
+        ]
+    }
+    if(x == 0 && y == range){
+        console.log('f')
+        return[
+            `{x:${x}, y:${y-1}}`,
+            `{x:${x+1}, y:${y-1}}`,
+            `{x:${x+1}, y:${y}}`,
+        ]
+    }
+    if(x == range && y == range){
+        console.log('f')
+        return[
+            `{x:${x-1}, y:${y}}`,
+            `{x:${x-1}, y:${y-1}}`,
+            `{x:${x}, y:${y-1}}`,
         ]
     }
     return []

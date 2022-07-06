@@ -1,5 +1,5 @@
 import TileMap from "./TileMap";
-import { TILECOLOR, colorTile, toggleColor, mapBoard, MapBoard } from './helper';
+import { TILECOLOR, toggleColor, mapBoard, MapBoard, returnNeighbours, checkIfTileIsEmpty } from './helper';
 
 interface iState{
     currentColorState: string,
@@ -28,24 +28,32 @@ function main(): void {
 
     const root = document.getElementById('root')
     root?.addEventListener('click', function(e){
-        const el: HTMLElement = e.target as HTMLElement
+        handleClick(e)
+    })
+
+    function handleClick(e?: Event): void {
+        const el: HTMLElement = e?.target as HTMLElement
         if(el.classList.contains('tile')){
             const coOrdinate: string = el.dataset.coOrdinate as string
-            if(currentColorState === TILECOLOR.BLACK){
-                el.classList.add('black')
-                currentColorState = toggleColor(currentColorState)
-                mapOfBoard[coOrdinate] = TILECOLOR.BLACK
-                console.log(mapOfBoard)
-            }
-            else
-            {
-                el.classList.add('white')
-                currentColorState = toggleColor(currentColorState)
-                mapOfBoard[coOrdinate] = TILECOLOR.WHITE
+            if(checkIfTileIsEmpty(mapOfBoard, coOrdinate)){
+                if(currentColorState === TILECOLOR.BLACK){
+                    el.classList.add('black')
+                    currentColorState = toggleColor(currentColorState)
+                    mapOfBoard[coOrdinate] = TILECOLOR.BLACK
+                    console.log(returnNeighbours(coOrdinate, 10))
+                }
+                else
+                {
+                    el.classList.add('white')
+                    currentColorState = toggleColor(currentColorState)
+                    mapOfBoard[coOrdinate] = TILECOLOR.WHITE
+                }
             }
         }
-    })
+    }
 }
+
+
 
 
 
