@@ -1,0 +1,25 @@
+body{
+    display: grid;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #root{
+    background-color: #8F9779;
+    height: 60rem;
+    width: 60rem;
+    content: '';
+    border: 10px solid #8F9779;
+    border-radius: 10px;
+  }
+
+  .flex{
+    display: flex;
+  }
+
+  .tile{
+    background-color: #aaa8a8;
+    height: 3rem;
+    width: 3rem;
+    border-radius: 50%;
+  }
