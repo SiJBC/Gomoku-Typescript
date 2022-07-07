@@ -1,5 +1,5 @@
 import TileMap from "./TileMap";
-import { TILECOLOR, toggleColor, mapBoard, MapBoard, returnNeighbours, checkIfTileIsEmpty } from './helper';
+import { TILECOLOR, toggleColor, mapBoard, MapBoard, returnNeighbours, checkIfTileIsEmpty, checkIfMatchInNeighbour, checkMatchDirections } from './helper';
 
 interface iState{
     currentColorState: string,
@@ -21,8 +21,6 @@ function main(): void {
     let {currentColorState, mapOfBoard} = state
     const grid = new TileMap(10);
     mapOfBoard = mapBoard(10)
-    console.log(mapOfBoard)
-
 
     document.body.append(grid.element)
 
@@ -40,13 +38,19 @@ function main(): void {
                     el.classList.add('black')
                     currentColorState = toggleColor(currentColorState)
                     mapOfBoard[coOrdinate] = TILECOLOR.BLACK
-                    console.log(returnNeighbours(coOrdinate, 10))
+                    console.log(checkIfMatchInNeighbour(mapOfBoard, coOrdinate, 10))
+                    if(checkIfMatchInNeighbour(mapOfBoard, coOrdinate, 10)){
+                        console.log(checkMatchDirections(mapOfBoard, coOrdinate, 10))
+                    }
                 }
                 else
                 {
                     el.classList.add('white')
                     currentColorState = toggleColor(currentColorState)
                     mapOfBoard[coOrdinate] = TILECOLOR.WHITE
+                    if(checkIfMatchInNeighbour(mapOfBoard, coOrdinate, 10)){
+                        console.log(checkMatchDirections(mapOfBoard, coOrdinate, 10))
+                    }
                 }
             }
         }

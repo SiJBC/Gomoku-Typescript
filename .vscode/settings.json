@@ -1,8 +1,12 @@
 {
     "cSpell.words": [
+        "DIAGONALNE",
+        "DIAGONALNW",
+        "neighbour",
         "Neighbours",
         "PLAYERCOLOR",
         "RETURNCOLOUR",
-        "TILECOLOR"
+        "TILECOLOR",
+        "WINCONDITIONS"
     ]
 }
