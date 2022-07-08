@@ -1,4 +1,5 @@
 
+
 export enum TILECOLOR {
     WHITE = 'WHITE',
     BLACK = 'BLACK',
@@ -54,6 +55,84 @@ export const checkMatchDirections = (map: MapBoard, currentTile: string, boardSi
         if(x < currentX && y > currentY){
             return WINCONDITIONS.DIAGONALNW
         }
+}
+
+
+export const checkDiagonalNwWin = (tileForCheck: string, boardLength: number, mapOfBoard: MapBoard, n: number, originalTile?:string): boolean => {
+    if(n == 4){
+        return true
+    }
+    if( n!= 4)
+    {
+        n = n +1
+        const colorForCheck = mapOfBoard[tileForCheck]
+        const {x, y} = JSON.parse(tileForCheck)
+        const neighboursCheck = returnNeighbours(tileForCheck, boardLength)
+                                .find((element: string) => JSON.parse(element).y === y +1 && mapOfBoard[element] === colorForCheck && element !== originalTile)
+            if(neighboursCheck){
+                return checkDiagonalNwWin(neighboursCheck, boardLength, mapOfBoard, n, tileForCheck)
+            }
+    }
+    return false
+}
+
+export const checkDiagonalNeWin = (tileForCheck: string, boardLength: number, mapOfBoard: MapBoard, n: number, originalTile?:string): boolean => {
+    if(n == 4){
+        return true
+    }
+    if(n != 4)
+    {
+        n = n + 1
+        const colorForCheck = mapOfBoard[tileForCheck]
+        console.log(colorForCheck)
+        const {x, y} = JSON.parse(tileForCheck)
+        const neighboursCheck = returnNeighbours(tileForCheck, boardLength)
+                                .find((element: string) => JSON.parse(element).y === y -1 && mapOfBoard[element] === colorForCheck && element !== originalTile)
+        console.log(neighboursCheck)
+        if(neighboursCheck){
+            return checkDiagonalNeWin(neighboursCheck, boardLength, mapOfBoard, n, tileForCheck)
+        }
+    }
+    return false
+}
+
+export const checkHorizontalWin = (tileForCheck: string, boardLength: number, mapOfBoard: MapBoard, n: number, originalTile?:string): boolean => {
+    if(n == 4){
+        return true
+    }
+    if(n != 4)
+    {   
+        n = n + 1
+        const colorForCheck = mapOfBoard[tileForCheck]
+        const {x, y} = JSON.parse(tileForCheck)
+        const neighboursCheck = returnNeighbours(tileForCheck, boardLength)
+                .find((element: string) => JSON.parse(element).y === y && mapOfBoard[element] === colorForCheck && element !== originalTile)
+        if(neighboursCheck){
+           return checkHorizontalWin(neighboursCheck, boardLength, mapOfBoard, n, tileForCheck)
+        }
+    }
+    return false
+}
+
+export const checkVerticalWin = (tileForCheck: string, boardLength: number, mapOfBoard: MapBoard, n: number, originalTile?:string): boolean => {
+    console.log('check')
+    if(n == 4){
+        return true
+    }
+    if(n != 4)
+    {   
+        n = n + 1
+        console.log('check')
+        const colorForCheck = mapOfBoard[tileForCheck]
+        console.log(colorForCheck)
+        const {x, y} = JSON.parse(tileForCheck)
+        const neighboursCheck = returnNeighbours(tileForCheck, boardLength)
+                .find((element: string) => JSON.parse(element).x === x && mapOfBoard[element] === colorForCheck && element !== originalTile)
+        if(neighboursCheck){
+           return checkVerticalWin(neighboursCheck, boardLength, mapOfBoard, n, tileForCheck)
+        }
+    }
+    return false
 }
 
 export const checkIfTileIsEmpty = (map: MapBoard, coOrdinate: string): boolean => {

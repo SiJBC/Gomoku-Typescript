@@ -1,5 +1,5 @@
 import TileMap from "./TileMap";
-import { TILECOLOR, toggleColor, mapBoard, MapBoard, returnNeighbours, checkIfTileIsEmpty, checkIfMatchInNeighbour, checkMatchDirections } from './helper';
+import { TILECOLOR, toggleColor, mapBoard, MapBoard, returnNeighbours, checkIfTileIsEmpty, checkIfMatchInNeighbour, checkMatchDirections, checkHorizontalWin, WINCONDITIONS, checkVerticalWin, checkDiagonalNeWin, checkDiagonalNwWin  } from './helper';
 
 interface iState{
     currentColorState: string,
@@ -38,9 +38,19 @@ function main(): void {
                     el.classList.add('black')
                     currentColorState = toggleColor(currentColorState)
                     mapOfBoard[coOrdinate] = TILECOLOR.BLACK
-                    console.log(checkIfMatchInNeighbour(mapOfBoard, coOrdinate, 10))
                     if(checkIfMatchInNeighbour(mapOfBoard, coOrdinate, 10)){
-                        console.log(checkMatchDirections(mapOfBoard, coOrdinate, 10))
+                        if(checkMatchDirections(mapOfBoard, coOrdinate, 10) === WINCONDITIONS.HORIZONTAL){
+                            console.log(checkHorizontalWin(coOrdinate, 10,  mapOfBoard, 0))
+                        }
+                        if(checkMatchDirections(mapOfBoard, coOrdinate, 10) === WINCONDITIONS.VERTICAL){
+                            console.log(checkVerticalWin(coOrdinate, 10,  mapOfBoard, 0))
+                        }
+                        if(checkMatchDirections(mapOfBoard, coOrdinate, 10) === WINCONDITIONS.DIAGONALNE){
+                            console.log(checkDiagonalNeWin(coOrdinate, 10,  mapOfBoard, 0))
+                        }
+                        if(checkMatchDirections(mapOfBoard, coOrdinate, 10) === WINCONDITIONS.DIAGONALNW){
+                            console.log(checkDiagonalNwWin(coOrdinate, 10,  mapOfBoard, 0))
+                        }
                     }
                 }
                 else
