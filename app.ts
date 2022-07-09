@@ -1,14 +1,10 @@
 import TileMap from "./TileMap";
-import { TILECOLOR, toggleColor, mapBoard, MapBoard, returnNeighbours, checkIfTileIsEmpty, checkIfMatchInNeighbour, checkMatchDirections, checkHorizontalWin, WINCONDITIONS, checkVerticalWin, checkDiagonalNeWin, checkDiagonalNwWin  } from './helper';
+import * as HELPER from './helper'
+import * as TYPES from './types'
 
-interface iState{
-    currentColorState: string,
-    winState: boolean,
-    mapOfBoard: MapBoard
-}
 
-const state: iState = {
-    currentColorState: TILECOLOR.BLACK,
+const state: TYPES.iState = {
+    currentColorState: TYPES.TILECOLOR.BLACK,
     winState: false,
     mapOfBoard: {}
 }
@@ -20,7 +16,7 @@ document.body.onload = main
 function main(): void {
     let {currentColorState, mapOfBoard} = state
     const grid = new TileMap(10);
-    mapOfBoard = mapBoard(10)
+    mapOfBoard = HELPER.mapBoard(10)
 
     document.body.append(grid.element)
 
@@ -33,34 +29,35 @@ function main(): void {
         const el: HTMLElement = e?.target as HTMLElement
         if(el.classList.contains('tile')){
             const coOrdinate: string = el.dataset.coOrdinate as string
-            if(checkIfTileIsEmpty(mapOfBoard, coOrdinate)){
-                if(currentColorState === TILECOLOR.BLACK){
-                    el.classList.add('black')
-                    currentColorState = toggleColor(currentColorState)
-                    mapOfBoard[coOrdinate] = TILECOLOR.BLACK
-                    if(checkIfMatchInNeighbour(mapOfBoard, coOrdinate, 10)){
-                        if(checkMatchDirections(mapOfBoard, coOrdinate, 10) === WINCONDITIONS.HORIZONTAL){
-                            console.log(checkHorizontalWin(coOrdinate, 10,  mapOfBoard, 0))
-                        }
-                        if(checkMatchDirections(mapOfBoard, coOrdinate, 10) === WINCONDITIONS.VERTICAL){
-                            console.log(checkVerticalWin(coOrdinate, 10,  mapOfBoard, 0))
-                        }
-                        if(checkMatchDirections(mapOfBoard, coOrdinate, 10) === WINCONDITIONS.DIAGONALNE){
-                            console.log(checkDiagonalNeWin(coOrdinate, 10,  mapOfBoard, 0))
-                        }
-                        if(checkMatchDirections(mapOfBoard, coOrdinate, 10) === WINCONDITIONS.DIAGONALNW){
-                            console.log(checkDiagonalNwWin(coOrdinate, 10,  mapOfBoard, 0))
-                        }
-                    }
+            if(HELPER.checkIfTileIsEmpty(mapOfBoard, coOrdinate)){
+                const checkMatchProps : TYPES.CheckMatchProps = {
+                    map: mapOfBoard,
+                    currentTile: coOrdinate,
+                    boardSize: 10
                 }
-                else
-                {
-                    el.classList.add('white')
-                    currentColorState = toggleColor(currentColorState)
-                    mapOfBoard[coOrdinate] = TILECOLOR.WHITE
-                    if(checkIfMatchInNeighbour(mapOfBoard, coOrdinate, 10)){
-                        console.log(checkMatchDirections(mapOfBoard, coOrdinate, 10))
+                const checkWinProps: TYPES.CheckWinProps = {
+                    tileForCheck: coOrdinate,
+                    boardLength: 10,
+                    mapOfBoard: mapOfBoard,
+                    n: 0,
+                    winDirection: HELPER.checkMatchDirections(checkMatchProps)
+                }
+                
+                el.classList.add(currentColorState.toLowerCase())
+                currentColorState = HELPER.toggleColor(currentColorState)
+                mapOfBoard[coOrdinate] = TYPES.TILECOLOR.BLACK
+
+                if(HELPER.checkIfMatchInNeighbour(checkMatchProps)){
+                    const checkWinProps: TYPES.CheckWinProps = {
+                        tileForCheck: coOrdinate,
+                        boardLength: 10,
+                        mapOfBoard: mapOfBoard,
+                        n: 0,
+                        winDirection: HELPER.checkMatchDirections(checkMatchProps)
                     }
+                    Object.values(TYPES.WINCONDITIONS).forEach(winCondition => {
+                        console.log(HELPER.checkForWin(checkWinProps))
+                    })
                 }
             }
         }
