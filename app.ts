@@ -35,17 +35,11 @@ function main(): void {
                     currentTile: coOrdinate,
                     boardSize: 10
                 }
-                const checkWinProps: TYPES.CheckWinProps = {
-                    tileForCheck: coOrdinate,
-                    boardLength: 10,
-                    mapOfBoard: mapOfBoard,
-                    n: 0,
-                    winDirection: HELPER.checkMatchDirections(checkMatchProps)
-                }
                 
                 el.classList.add(currentColorState.toLowerCase())
+                mapOfBoard[coOrdinate] = currentColorState as TYPES.TILECOLOR
                 currentColorState = HELPER.toggleColor(currentColorState)
-                mapOfBoard[coOrdinate] = TYPES.TILECOLOR.BLACK
+                
 
                 if(HELPER.checkIfMatchInNeighbour(checkMatchProps)){
                     const checkWinProps: TYPES.CheckWinProps = {
@@ -55,9 +49,7 @@ function main(): void {
                         n: 0,
                         winDirection: HELPER.checkMatchDirections(checkMatchProps)
                     }
-                    Object.values(TYPES.WINCONDITIONS).forEach(winCondition => {
                         console.log(HELPER.checkForWin(checkWinProps))
-                    })
                 }
             }
         }

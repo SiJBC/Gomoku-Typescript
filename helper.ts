@@ -50,11 +50,14 @@ export const checkForWin = (props: TYPES.CheckWinProps): boolean => {
     {   
         n = n + 1
         const colorForCheck = mapOfBoard[tileForCheck]
+        console.log(tileForCheck)
+        console.log(colorForCheck)
         const {x, y} = JSON.parse(tileForCheck)
         switch(winDirection){
             case TYPES.WINCONDITIONS.HORIZONTAL:
                 neighboursCheck = returnNeighbours(tileForCheck, boardLength)
-                        .find((element: string) => JSON.parse(element).y === y && mapOfBoard[element] === colorForCheck && element !== originalTile)
+                        .find((element: string) => JSON.parse(element).y === y && 
+                        mapOfBoard[element] === colorForCheck && element !== originalTile)
                         break ;
             case TYPES.WINCONDITIONS.VERTICAL:
                 neighboursCheck = returnNeighbours(tileForCheck, boardLength)
