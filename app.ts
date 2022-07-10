@@ -1,4 +1,4 @@
-import * as HELPER from './helper'
+import {render} from './helper'
 import * as TYPES from './types'
 
 
@@ -13,7 +13,7 @@ const state: TYPES.iState = {
 document.body.onload = main
 
 function main(): void {
-    HELPER.render(state)
+    render(state)
 }
 
 
