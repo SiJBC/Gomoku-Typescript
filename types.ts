@@ -1,12 +1,22 @@
 export interface iState{
     currentColorState: string,
-    winState: boolean,
+    gameLogicState: DYNAMICTEXT,
     mapOfBoard: MapBoard,
-    boardLength: number
+    boardLength: number,
+    winRow?: string[]
 }
 
 export interface TargetElement{
     value: number 
+}
+
+export enum DYNAMICTEXT {
+    WHITE = 'white player move',
+    BLACK = 'black player move',
+    BLACKWIN = 'black player has won',
+    WHITEWIN = 'white player has won',
+    DRAW = 'draw',
+    DEFAULT = 'Select the board size'
 }
 
 
@@ -32,7 +42,7 @@ export interface CheckWinProps {
     boardLength: number,
     mapOfBoard: MapBoard,
     n: number,
-    originalTile?: string
+    originalTile?: string,
     winDirection? : WINCONDITIONS | void | undefined
 }
 

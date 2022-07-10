@@ -16,6 +16,10 @@ button {
   width: 100%;
 }
 
+button:hover{
+  opacity: 50%;
+}
+
 .title-container{
   position: absolute;
   max-width: 30rem;
@@ -56,12 +60,25 @@ h2{
   margin-top: 9rem;
 }
 
+.dynamic-text-content{
+  max-width: 25rem;
+  min-width: 25rem;
+  border-radius: 10px;
+  font-size: 2rem;
+  padding: 14px 20px;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  margin: 6rem auto 1rem auto;
+}
+
 .buttons{
   position: absolute;
   top: 10rem;
   left: 50%;
-  max-width: 30rem;
-  min-width: 30rem;
+  max-width: 10rem;
+  min-width: 10rem;
+  max-height: 4rem;
 }
 
 .buttons-wrapper{
@@ -88,9 +105,7 @@ h2{
 .flex{
   display: flex;
 }
-.flex button:hover{
-  opacity: 50%;
-}
+
 
 .focus {
   opacity: 50%;

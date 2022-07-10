@@ -4,9 +4,10 @@ import * as TYPES from './types'
 
 const state: TYPES.iState = {
     currentColorState: TYPES.TILECOLOR.BLACK,
-    winState: false,
+    gameLogicState: TYPES.DYNAMICTEXT.DEFAULT,
     mapOfBoard: {},
-    boardLength: 20,
+    boardLength: 6,
+    winRow: []
 }
 
 

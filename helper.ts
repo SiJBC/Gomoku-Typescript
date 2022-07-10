@@ -1,6 +1,7 @@
 import * as TYPES from './types';
 import TileMap from "./TileMap";
 
+
 export  const render = (state: TYPES.iState) =>{
     const grid = new TileMap(state.boardLength);
     state.mapOfBoard = mapBoard(state.boardLength)
@@ -27,10 +28,14 @@ export  const render = (state: TYPES.iState) =>{
 }
 
 const handleReset = (state: TYPES.iState) => {
+    location.reload()
     const root = document.getElementById('root')
+
+    state.gameLogicState = TYPES.DYNAMICTEXT.DEFAULT
+    state.currentColorState = TYPES.TILECOLOR.BLACK
+    renderDynamicText(state)
+
     document.body.removeChild(root as Node)
-    const dynamicEl = document.getElementById('dynamic-text-content')
-    dynamicEl?.classList.add('hidden')
     Array.from({length: 4}).forEach((_, i) => {
         const el = document.getElementById(`${i + 1}`)
         el?.classList.remove('hidden')
@@ -39,31 +44,53 @@ const handleReset = (state: TYPES.iState) => {
 }
 
 const handleStart = (state: TYPES.iState, e: MouseEvent) => {
+    
+    state.gameLogicState = TYPES.DYNAMICTEXT.BLACK
+    renderDynamicText(state)
     const root = document.getElementById('root')
-    const dynamicEl = document.getElementById('dynamic-text-content')
-    dynamicEl?.classList.remove('hidden')
-    Array.from({length: 4}).forEach((_, i) => {
+    Array.from({length: 3}).forEach((_, i) => {
         const el = document.getElementById(`${i + 1}`)
         el?.classList.add('hidden')
     })
-    root?.addEventListener('click', function(e){
-        handleClick(state, e)
-    })
+    root?.addEventListener('click', (e) => handleClick(state, e))
 }
+
+const renderDynamicText = (state: TYPES.iState) => {
+    const dynamicEl = document.querySelector('.dynamic-text-content')
+    if(dynamicEl){
+        Array.from({length: Object.values(TYPES.DYNAMICTEXT).length}).forEach((_, i) => {
+            if(state.gameLogicState === Object.values(TYPES.DYNAMICTEXT)[i])
+            {
+                dynamicEl.innerHTML = Object.values(TYPES.DYNAMICTEXT)[i] 
+            }
+        })
+    }
+}
+
+
 
 const handleHover = (state: TYPES.iState, e: MouseEvent) => {
     const target = e.target as any
     state.boardLength = Number(target.dataset.value)
     const root = document.getElementById('root')
+    Array.from({length: 3}).forEach((_, i) => {
+        const el = document.getElementById(`${i + 1}`)
+        el?.classList.remove('focus')
+    })
+    target.classList.add('focus')
     document.body.removeChild(root as HTMLElement)
     render(state)
 }
 
-const handleClick =(state: TYPES.iState, e?: Event): void => {
+const boardEmpty = (map: TYPES.MapBoard): boolean => {
+    return Object.values(map).every(el => el === TYPES.TILECOLOR.EMPTY)
+}
+
+let handleClick =(state: TYPES.iState, e?: Event): void => {
     const el: HTMLElement = e?.target as HTMLElement
     if(el.classList.contains('tile')){
         const coOrdinate: string = el.dataset.coOrdinate as string
-        if(checkIfTileIsEmpty(state.mapOfBoard, coOrdinate)){
+        if(checkIfTileIsEmpty(state.mapOfBoard, coOrdinate) && state.gameLogicState !== TYPES.DYNAMICTEXT.BLACKWIN && state.gameLogicState !== TYPES.DYNAMICTEXT.WHITEWIN){
             const checkMatchProps : TYPES.CheckMatchProps = {
                 map: state.mapOfBoard,
                 currentTile: coOrdinate,
@@ -72,19 +99,28 @@ const handleClick =(state: TYPES.iState, e?: Event): void => {
             
             el.classList.add(state.currentColorState.toLowerCase())
             state.mapOfBoard[coOrdinate] = state.currentColorState as TYPES.TILECOLOR
+            state.gameLogicState = state.currentColorState === TYPES.TILECOLOR.BLACK ? TYPES.DYNAMICTEXT.WHITE : TYPES.DYNAMICTEXT.BLACK
+            renderDynamicText(state)
             state.currentColorState = toggleColor(state.currentColorState)
             if(checkIfMatchInNeighbour(checkMatchProps)){
                 const checkWinProps: TYPES.CheckWinProps = {
                     tileForCheck: coOrdinate,
-                    boardLength: 10,
+                    boardLength: state.boardLength,
                     mapOfBoard: state.mapOfBoard,
                     n: 0,
                     winDirection: checkMatchDirections(checkMatchProps)
                 }
-                    console.log(checkForWin(checkWinProps))
+                    if(checkForWin(checkWinProps)){
+                        state.gameLogicState == TYPES.DYNAMICTEXT.WHITE ? state.gameLogicState = TYPES.DYNAMICTEXT.BLACKWIN : state.gameLogicState = TYPES.DYNAMICTEXT.WHITEWIN
+                        renderDynamicText(state)
+                        const root = document.getElementById('root')
+                        
+                    }
+                    
             }
         }
     }
+    // console.log(boardEmpty(state.mapOfBoard))
 }
 
 
@@ -103,7 +139,7 @@ const checkMatchDirections = (props: TYPES.CheckMatchProps): TYPES.WINCONDITIONS
     const { map, currentTile, boardSize } = props
     const matchingNeighbour: string | undefined = returnNeighbours(currentTile, boardSize).find((neighbour) => {
         return map[neighbour] === map[currentTile]
-    })
+    }) 
     if(matchingNeighbour){
         const {x, y} = JSON.parse(matchingNeighbour as string)
         const {x: currentX, y: currentY} = JSON.parse(currentTile)
@@ -113,16 +149,10 @@ const checkMatchDirections = (props: TYPES.CheckMatchProps): TYPES.WINCONDITIONS
         if(y === currentY){
             return TYPES.WINCONDITIONS.HORIZONTAL
         }
-        if(x > currentX && y > currentY){
-            return TYPES.WINCONDITIONS.DIAGONALNW
-        }
-        if(x < currentX && y < currentY){
+        if(x != currentX && y < currentY){
             return TYPES.WINCONDITIONS.DIAGONALNE
         }
-        if(x > currentX && y < currentY){
-            return TYPES.WINCONDITIONS.DIAGONALNE
-        }
-        if(x < currentX && y > currentY){
+        if(x != currentX && y > currentY){
             return TYPES.WINCONDITIONS.DIAGONALNW
         }
     }        
@@ -136,10 +166,9 @@ const checkForWin = (props: TYPES.CheckWinProps): boolean => {
     }
     if(n != 4)
     {   
+        console.log(tileForCheck)
         n = n + 1
         const colorForCheck = mapOfBoard[tileForCheck]
-        console.log(tileForCheck)
-        console.log(colorForCheck)
         const {x, y} = JSON.parse(tileForCheck)
         switch(winDirection){
             case TYPES.WINCONDITIONS.HORIZONTAL:
@@ -155,11 +184,11 @@ const checkForWin = (props: TYPES.CheckWinProps): boolean => {
                         break;
             case TYPES.WINCONDITIONS.DIAGONALNE:
                  neighboursCheck = returnNeighbours(tileForCheck, boardLength)
-                        .find((element: string) => JSON.parse(element).y === y -1 && mapOfBoard[element] === colorForCheck && element !== originalTile)
+                        .find((element: string) => JSON.parse(element).y === y -1 && JSON.parse(element).x != x && mapOfBoard[element] === colorForCheck && element !== originalTile)
                         break;
             case TYPES.WINCONDITIONS.DIAGONALNW:
                 neighboursCheck = returnNeighbours(tileForCheck, boardLength)
-                        .find((element: string) => JSON.parse(element).y === y +1 && mapOfBoard[element] === colorForCheck && element !== originalTile)
+                        .find((element: string) => JSON.parse(element).y === y +1 && JSON.parse(element).x != x && mapOfBoard[element] === colorForCheck && element !== originalTile)
                         break;
         }
         if(neighboursCheck){
@@ -238,6 +267,7 @@ const returnNeighbours = (selectedTile: string, boardLength: number): string[] =
             `{"x":${x-1}, "y":${y}}`,
             `{"x":${x-1}, "y":${y+1}}`,
             `{"x":${x}, "y":${y+1}}`,
+            `{"x":${x}, "y":${y-1}}`
         ]
     }
     if(x == 0 && y == range){
@@ -245,6 +275,8 @@ const returnNeighbours = (selectedTile: string, boardLength: number): string[] =
             `{"x":${x}, "y":${y-1}}`,
             `{"x":${x+1}, "y":${y-1}}`,
             `{"x":${x+1}, "y":${y}}`,
+            `{"x":${x-1}, "y":${y}}`,
+
         ]
     }
     if(x == range && y == range){
