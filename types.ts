@@ -44,6 +44,7 @@ export interface CheckWinProps {
     n: number,
     originalTile?: string,
     winDirection? : WINCONDITIONS | void | undefined
+    propsDirectionCheck?: number
 }
 
 export interface CheckMatchProps {

@@ -82,9 +82,6 @@ const handleHover = (state: TYPES.iState, e: MouseEvent) => {
     render(state)
 }
 
-const boardEmpty = (map: TYPES.MapBoard): boolean => {
-    return Object.values(map).every(el => el === TYPES.TILECOLOR.EMPTY)
-}
 
 let handleClick =(state: TYPES.iState, e?: Event): void => {
     const el: HTMLElement = e?.target as HTMLElement
@@ -113,8 +110,6 @@ let handleClick =(state: TYPES.iState, e?: Event): void => {
                     if(checkForWin(checkWinProps)){
                         state.gameLogicState == TYPES.DYNAMICTEXT.WHITE ? state.gameLogicState = TYPES.DYNAMICTEXT.BLACKWIN : state.gameLogicState = TYPES.DYNAMICTEXT.WHITEWIN
                         renderDynamicText(state)
-                        const root = document.getElementById('root')
-                        
                     }
                     
             }
@@ -159,13 +154,19 @@ const checkMatchDirections = (props: TYPES.CheckMatchProps): TYPES.WINCONDITIONS
 }
 
 const checkForWin = (props: TYPES.CheckWinProps): boolean => {
-    let { tileForCheck, boardLength, mapOfBoard, n, originalTile, winDirection } = props
+    let { tileForCheck, boardLength, mapOfBoard, n, originalTile, winDirection, propsDirectionCheck } = props
     let neighboursCheck: string | undefined;
-    if(n == 4){
+    const directionCheck = originalTile != undefined ? JSON.parse(originalTile).x - JSON.parse(tileForCheck).x : 0
+    console.log(propsDirectionCheck == directionCheck)
+    if(n == 4 && propsDirectionCheck == directionCheck){
         return true
     }
     if(n != 4)
     {   
+        // need to add in direction check to confirm if it is x + 1 or x -1 for the diagonals
+        console.log(originalTile)
+        console.log(directionCheck)
+        console.log(propsDirectionCheck)
         console.log(tileForCheck)
         n = n + 1
         const colorForCheck = mapOfBoard[tileForCheck]
@@ -184,11 +185,17 @@ const checkForWin = (props: TYPES.CheckWinProps): boolean => {
                         break;
             case TYPES.WINCONDITIONS.DIAGONALNE:
                  neighboursCheck = returnNeighbours(tileForCheck, boardLength)
-                        .find((element: string) => JSON.parse(element).y === y -1 && JSON.parse(element).x != x && mapOfBoard[element] === colorForCheck && element !== originalTile)
+                        .find((element: string) => JSON.parse(element).y === y -1 
+                        && ((JSON.parse(element).x === x + 1 || JSON.parse(element).x === x - 1))
+                        && mapOfBoard[element] === colorForCheck 
+                        && element !== originalTile)
                         break;
             case TYPES.WINCONDITIONS.DIAGONALNW:
                 neighboursCheck = returnNeighbours(tileForCheck, boardLength)
-                        .find((element: string) => JSON.parse(element).y === y +1 && JSON.parse(element).x != x && mapOfBoard[element] === colorForCheck && element !== originalTile)
+                        .find((element: string) => JSON.parse(element).y === y +1 
+                        && ((JSON.parse(element).x === x + 1 || JSON.parse(element).x === x - 1))
+                        && mapOfBoard[element] === colorForCheck 
+                        && element !== originalTile)
                         break;
         }
         if(neighboursCheck){
@@ -198,7 +205,8 @@ const checkForWin = (props: TYPES.CheckWinProps): boolean => {
                 mapOfBoard: mapOfBoard,
                 n: n,
                 originalTile: tileForCheck,
-                winDirection: winDirection
+                winDirection: winDirection,
+                propsDirectionCheck: directionCheck
             }
            return checkForWin(newProps)
         }
