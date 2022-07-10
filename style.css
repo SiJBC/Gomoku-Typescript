@@ -1,33 +1,116 @@
 body{
-    display: grid;
-    justify-content: center;
-    align-items: center;
-  }
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
 
-  #root{
-    background-color: #8F9779;
-    height: 60rem;
-    width: 60rem;
-    content: '';
-    border: 10px solid #8F9779;
-    border-radius: 10px;
-  }
+button {
+  background-color: #817997;
+  border-radius: 10px;
+  color: white;
+  font-size: 2rem;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
 
-  .flex{
-    display: flex;
-  }
+.title-container{
+  position: absolute;
+  max-width: 30rem;
+  min-width: 30rem;
+  top: 0;
+  left: 50%
+}
 
-  .tile{
-    background-color: #aaa8a8;
-    height: 3rem;
-    width: 3rem;
-    border-radius: 50%;
-  }
+h1{
+  background-color: #817997;
+  color: white;
+  padding: 14px 20px; 
+  font-size: 4rem;
+  border-radius: 10px;
+  font-family: 'Rockwell', sans-serif;
+  text-align: center;
+  margin-bottom: 0;
+  position: relative;
+  margin: 0 auto;
+  left: -50%;
 
-  .black{
-    background-color: black;
-  }
+}
 
-  .white{
-    background-color: white;
-  }
+h2{
+  color: #817997;
+  text-align: center;
+  font-size: 2rem;
+  font-family: 'Rockwell', sans-serif;
+  margin-top: 7rem;
+}
+
+#root{
+  background-color: #8F9779;
+  content: '';
+  border: 10px solid #8F9779;
+  border-radius: 10px;
+  margin: auto;
+  margin-top: 9rem;
+}
+
+.buttons{
+  position: absolute;
+  top: 10rem;
+  left: 50%;
+  max-width: 30rem;
+  min-width: 30rem;
+}
+
+.buttons-wrapper{
+  position: relative;
+  left:-50%
+}
+
+.buttons-wrapper > * {
+  padding: 1rem 
+}
+
+.flex.buttons-wrapper{
+  justify-content: center;
+  gap: 1rem;
+}
+
+.reset-button{
+  position: relative;
+  margin: 0 auto;
+  left: -50%;
+  margin-bottom: 10rem;
+}
+
+.flex{
+  display: flex;
+}
+.flex button:hover{
+  opacity: 50%;
+}
+
+.focus {
+  opacity: 50%;
+}
+
+.tile{
+  background-color: #aaa8a8;
+  height: 3rem;
+  width: 3rem;
+  border-radius: 50%;
+}
+
+.black{
+  background-color: black;
+}
+
+.white{
+  background-color: white;
+}
+
+.hidden{
+  display: none;
+}

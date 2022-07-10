@@ -1,17 +1,105 @@
 import * as TYPES from './types';
+import TileMap from "./TileMap";
 
-export const toggleColor = (arg: string): string => {
+export  const render = (state: TYPES.iState) =>{
+    const grid = new TileMap(state.boardLength);
+    state.mapOfBoard = mapBoard(state.boardLength)
+    document.body.append(grid.element)
+    const start = document.getElementById('start')
+    const reset = document.getElementById('reset')
+    start?.addEventListener('click', function(e){
+        handleStart(state, e)
+        start.classList.add('hidden')
+        reset?.classList.remove('hidden')
+    })
+    reset?.addEventListener('click', function(e){
+        handleReset(state)
+        reset.classList.add('hidden')
+        start?.classList.remove('hidden')
+    })
+    Array.from({length: 3}).forEach((_, i) => {
+        const btn = document.getElementById(`${i + 1}`)
+        btn?.addEventListener('mouseenter', function(e){
+            handleHover(state, e)
+        }
+        )
+    })
+}
+
+const handleReset = (state: TYPES.iState) => {
+    const root = document.getElementById('root')
+    document.body.removeChild(root as Node)
+    const dynamicEl = document.getElementById('dynamic-text-content')
+    dynamicEl?.classList.add('hidden')
+    Array.from({length: 4}).forEach((_, i) => {
+        const el = document.getElementById(`${i + 1}`)
+        el?.classList.remove('hidden')
+    })
+    render(state)
+}
+
+const handleStart = (state: TYPES.iState, e: MouseEvent) => {
+    const root = document.getElementById('root')
+    const dynamicEl = document.getElementById('dynamic-text-content')
+    dynamicEl?.classList.remove('hidden')
+    Array.from({length: 4}).forEach((_, i) => {
+        const el = document.getElementById(`${i + 1}`)
+        el?.classList.add('hidden')
+    })
+    root?.addEventListener('click', function(e){
+        handleClick(state, e)
+    })
+}
+
+const handleHover = (state: TYPES.iState, e: MouseEvent) => {
+    const target = e.target as any
+    state.boardLength = Number(target.dataset.value)
+    const root = document.getElementById('root')
+    document.body.removeChild(root as HTMLElement)
+    render(state)
+}
+
+const handleClick =(state: TYPES.iState, e?: Event): void => {
+    const el: HTMLElement = e?.target as HTMLElement
+    if(el.classList.contains('tile')){
+        const coOrdinate: string = el.dataset.coOrdinate as string
+        if(checkIfTileIsEmpty(state.mapOfBoard, coOrdinate)){
+            const checkMatchProps : TYPES.CheckMatchProps = {
+                map: state.mapOfBoard,
+                currentTile: coOrdinate,
+                boardSize: state.boardLength
+            }
+            
+            el.classList.add(state.currentColorState.toLowerCase())
+            state.mapOfBoard[coOrdinate] = state.currentColorState as TYPES.TILECOLOR
+            state.currentColorState = toggleColor(state.currentColorState)
+            if(checkIfMatchInNeighbour(checkMatchProps)){
+                const checkWinProps: TYPES.CheckWinProps = {
+                    tileForCheck: coOrdinate,
+                    boardLength: 10,
+                    mapOfBoard: state.mapOfBoard,
+                    n: 0,
+                    winDirection: checkMatchDirections(checkMatchProps)
+                }
+                    console.log(checkForWin(checkWinProps))
+            }
+        }
+    }
+}
+
+
+const toggleColor = (arg: string): string => {
     return arg === TYPES.TILECOLOR.BLACK ? TYPES.TILECOLOR.WHITE : TYPES.TILECOLOR.BLACK
 }
 
-export const checkIfMatchInNeighbour = (props: TYPES.CheckMatchProps): boolean => {
+const checkIfMatchInNeighbour = (props: TYPES.CheckMatchProps): boolean => {
     const { map, currentTile, boardSize } = props
     return returnNeighbours(currentTile, boardSize).map((neighbour) => {
         return map[neighbour]
     }).includes(map[currentTile])
 }
 
-export const checkMatchDirections = (props: TYPES.CheckMatchProps): TYPES.WINCONDITIONS | void => {
+const checkMatchDirections = (props: TYPES.CheckMatchProps): TYPES.WINCONDITIONS | void => {
     const { map, currentTile, boardSize } = props
     const matchingNeighbour: string | undefined = returnNeighbours(currentTile, boardSize).find((neighbour) => {
         return map[neighbour] === map[currentTile]
@@ -40,7 +128,7 @@ export const checkMatchDirections = (props: TYPES.CheckMatchProps): TYPES.WINCON
     }        
 }
 
-export const checkForWin = (props: TYPES.CheckWinProps): boolean => {
+const checkForWin = (props: TYPES.CheckWinProps): boolean => {
     let { tileForCheck, boardLength, mapOfBoard, n, originalTile, winDirection } = props
     let neighboursCheck: string | undefined;
     if(n == 4){
@@ -89,7 +177,7 @@ export const checkForWin = (props: TYPES.CheckWinProps): boolean => {
     return false
 }
 
-export const checkIfTileIsEmpty = (map: TYPES.MapBoard, coOrdinate: string): boolean => {
+const checkIfTileIsEmpty = (map: TYPES.MapBoard, coOrdinate: string): boolean => {
     return map[coOrdinate] === TYPES.TILECOLOR.EMPTY
 }
 
@@ -104,7 +192,7 @@ export const mapBoard = (length: number): TYPES.MapBoard => {
 }
 
 
-export const returnNeighbours = (selectedTile: string, boardLength: number): string[] => {
+const returnNeighbours = (selectedTile: string, boardLength: number): string[] => {
     const range = boardLength - 1
     const {x, y} = JSON.parse(selectedTile)
     if((x > 0 && x < range) && (y > 0 && y < range))

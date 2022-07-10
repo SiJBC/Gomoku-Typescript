@@ -1,7 +1,12 @@
 export interface iState{
     currentColorState: string,
     winState: boolean,
-    mapOfBoard: MapBoard
+    mapOfBoard: MapBoard,
+    boardLength: number
+}
+
+export interface TargetElement{
+    value: number 
 }
 
 

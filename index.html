@@ -9,6 +9,21 @@
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
-      
+    <div class="title-container">
+      <h1>Gomoku</h1>
+    </div>
+      <h2 id="4">Select the board size</h2>
+      <h2 id ='dynamic-text-content' class="hidden">Blacks Turn</h2>
+      <div data-value="buttons" class="buttons">
+        <div class="buttons-wrapper flex ">
+          <button id="1" data-value ='10'>Small</button>
+          <button id="2" data-value = '15'>Medium</button>
+          <button id="3" data-value = '20'>Large</button>
+        </div>
+        <div class="button-wrapper reset-button">
+          <button class="hidden" id="reset" data-value = 'reset'>Reset</button>
+          <button id="start" data-value = 'reset'>Start</button>
+        </div>
+      </div>
   </body>
 </html>
