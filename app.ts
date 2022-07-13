@@ -7,7 +7,8 @@ const state: TYPES.iState = {
     gameLogicState: TYPES.DYNAMICTEXT.DEFAULT,
     mapOfBoard: {},
     boardLength: 6,
-    winRow: []
+    winRow: [],
+    emptyTiles: 0,
 }
 
 
@@ -16,6 +17,8 @@ document.body.onload = main
 function main(): void {
     render(state)
 }
+
+
 
 
 

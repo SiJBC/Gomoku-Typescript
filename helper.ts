@@ -5,6 +5,7 @@ import TileMap from "./TileMap";
 export  const render = (state: TYPES.iState) =>{
     const grid = new TileMap(state.boardLength);
     state.mapOfBoard = mapBoard(state.boardLength)
+    state.emptyTiles = state.boardLength * state.boardLength
     document.body.append(grid.element)
     const start = document.getElementById('start')
     const reset = document.getElementById('reset')
@@ -29,18 +30,6 @@ export  const render = (state: TYPES.iState) =>{
 
 const handleReset = (state: TYPES.iState) => {
     location.reload()
-    const root = document.getElementById('root')
-
-    state.gameLogicState = TYPES.DYNAMICTEXT.DEFAULT
-    state.currentColorState = TYPES.TILECOLOR.BLACK
-    renderDynamicText(state)
-
-    document.body.removeChild(root as Node)
-    Array.from({length: 4}).forEach((_, i) => {
-        const el = document.getElementById(`${i + 1}`)
-        el?.classList.remove('hidden')
-    })
-    render(state)
 }
 
 const handleStart = (state: TYPES.iState, e: MouseEvent) => {
@@ -48,6 +37,8 @@ const handleStart = (state: TYPES.iState, e: MouseEvent) => {
     state.gameLogicState = TYPES.DYNAMICTEXT.BLACK
     renderDynamicText(state)
     const root = document.getElementById('root')
+    root?.classList.remove('no-drop')
+    root?.classList.add('grabbing')
     Array.from({length: 3}).forEach((_, i) => {
         const el = document.getElementById(`${i + 1}`)
         el?.classList.add('hidden')
@@ -68,7 +59,6 @@ const renderDynamicText = (state: TYPES.iState) => {
 }
 
 
-
 const handleHover = (state: TYPES.iState, e: MouseEvent) => {
     const target = e.target as any
     state.boardLength = Number(target.dataset.value)
@@ -82,8 +72,7 @@ const handleHover = (state: TYPES.iState, e: MouseEvent) => {
     render(state)
 }
 
-
-let handleClick =(state: TYPES.iState, e?: Event): void => {
+const handleClick =(state: TYPES.iState, e?: Event): void => {
     const el: HTMLElement = e?.target as HTMLElement
     if(el.classList.contains('tile')){
         const coOrdinate: string = el.dataset.coOrdinate as string
@@ -95,27 +84,34 @@ let handleClick =(state: TYPES.iState, e?: Event): void => {
             }
             
             el.classList.add(state.currentColorState.toLowerCase())
+            el.classList.add('no-drop')
             state.mapOfBoard[coOrdinate] = state.currentColorState as TYPES.TILECOLOR
             state.gameLogicState = state.currentColorState === TYPES.TILECOLOR.BLACK ? TYPES.DYNAMICTEXT.WHITE : TYPES.DYNAMICTEXT.BLACK
             renderDynamicText(state)
             state.currentColorState = toggleColor(state.currentColorState)
+            
+            if(!checkForDraw(state)){
+                state.gameLogicState = TYPES.DYNAMICTEXT.DRAW;
+                renderDynamicText(state)
+            } 
+
             if(checkIfMatchInNeighbour(checkMatchProps)){
                 const checkWinProps: TYPES.CheckWinProps = {
                     tileForCheck: coOrdinate,
                     boardLength: state.boardLength,
                     mapOfBoard: state.mapOfBoard,
                     n: 0,
-                    winDirection: checkMatchDirections(checkMatchProps)
+                    winDirection: checkMatchDirections(checkMatchProps),
+                    winRow: [coOrdinate]
                 }
+                console.log(checkWinProps)
                     if(checkForWin(checkWinProps)){
                         state.gameLogicState == TYPES.DYNAMICTEXT.WHITE ? state.gameLogicState = TYPES.DYNAMICTEXT.BLACKWIN : state.gameLogicState = TYPES.DYNAMICTEXT.WHITEWIN
-                        renderDynamicText(state)
+                        renderDynamicText(state)                        
                     }
-                    
             }
         }
     }
-    // console.log(boardEmpty(state.mapOfBoard))
 }
 
 
@@ -153,21 +149,26 @@ const checkMatchDirections = (props: TYPES.CheckMatchProps): TYPES.WINCONDITIONS
     }        
 }
 
+const checkForDraw = (state: TYPES.iState): number | boolean => {
+        if(state.emptyTiles) state.emptyTiles = state.emptyTiles - 1;
+        if(state.emptyTiles === 0)return false;     
+        return true
+}
+
 const checkForWin = (props: TYPES.CheckWinProps): boolean => {
-    let { tileForCheck, boardLength, mapOfBoard, n, originalTile, winDirection, propsDirectionCheck } = props
+    let { tileForCheck, boardLength, mapOfBoard, n, originalTile, winDirection, propsDirectionCheck, winRow } = props
     let neighboursCheck: string | undefined;
     const directionCheck = originalTile != undefined ? JSON.parse(originalTile).x - JSON.parse(tileForCheck).x : 0
-    console.log(propsDirectionCheck == directionCheck)
+    // winning animations
     if(n == 4 && propsDirectionCheck == directionCheck){
+        for(const el of winRow){
+            let elEl = document.getElementById(el)
+            elEl?.classList.add('win')
+        }
         return true
     }
     if(n != 4)
     {   
-        // need to add in direction check to confirm if it is x + 1 or x -1 for the diagonals
-        console.log(originalTile)
-        console.log(directionCheck)
-        console.log(propsDirectionCheck)
-        console.log(tileForCheck)
         n = n + 1
         const colorForCheck = mapOfBoard[tileForCheck]
         const {x, y} = JSON.parse(tileForCheck)
@@ -176,7 +177,7 @@ const checkForWin = (props: TYPES.CheckWinProps): boolean => {
                 neighboursCheck = returnNeighbours(tileForCheck, boardLength)
                         .find((element: string) => JSON.parse(element).y === y && 
                         mapOfBoard[element] === colorForCheck && element !== originalTile)
-                        break ;
+                        break;
             case TYPES.WINCONDITIONS.VERTICAL:
                 neighboursCheck = returnNeighbours(tileForCheck, boardLength)
                         .find((element: string) => JSON.parse(element).x === x && 
@@ -198,7 +199,9 @@ const checkForWin = (props: TYPES.CheckWinProps): boolean => {
                         && element !== originalTile)
                         break;
         }
+
         if(neighboursCheck){
+            winRow.push(neighboursCheck)
             const newProps: TYPES.CheckWinProps = {
                 tileForCheck: neighboursCheck,
                 boardLength: boardLength,
@@ -206,11 +209,13 @@ const checkForWin = (props: TYPES.CheckWinProps): boolean => {
                 n: n,
                 originalTile: tileForCheck,
                 winDirection: winDirection,
-                propsDirectionCheck: directionCheck
+                propsDirectionCheck: directionCheck,
+                winRow: winRow
             }
            return checkForWin(newProps)
         }
     }
+    winRow.length = 0 // reset winRow
     return false
 }
 

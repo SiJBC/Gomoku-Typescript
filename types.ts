@@ -4,6 +4,7 @@ export interface iState{
     mapOfBoard: MapBoard,
     boardLength: number,
     winRow?: string[]
+    emptyTiles?: number
 }
 
 export interface TargetElement{
@@ -44,7 +45,8 @@ export interface CheckWinProps {
     n: number,
     originalTile?: string,
     winDirection? : WINCONDITIONS | void | undefined
-    propsDirectionCheck?: number
+    propsDirectionCheck?: number,
+    winRow: any[],
 }
 
 export interface CheckMatchProps {

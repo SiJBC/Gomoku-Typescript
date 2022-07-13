@@ -9,6 +9,7 @@ export default class TileMap {
         })
         this.element = document.createElement('div')
         this.element.setAttribute('id', 'root')
+        this.element.classList.add('no-drop')
         this.element.setAttribute('style', `height: ${boardLength * 3}rem; width: ${boardLength * 3}rem`)  
         this.element.append(...this.rows.map(row => row.element))
     }
