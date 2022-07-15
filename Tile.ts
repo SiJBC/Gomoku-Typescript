@@ -10,4 +10,5 @@ export default class Tile {
         this.element.setAttribute('id', this.coordinate)
         this.element.classList.add('tile')
     }
+    
 }

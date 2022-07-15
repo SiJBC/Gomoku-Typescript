@@ -7,7 +7,7 @@ Gomoku or 5 in a row is an abstract strategy board game. It is traditionally pla
 
 The this digital version of the game requires node.js to be installed to run.
 
-To run the game in the root folder of the application:
+To run the game open the root folder of the application:
 
 * use npm install or yarn add 
 * then npm or yarn start

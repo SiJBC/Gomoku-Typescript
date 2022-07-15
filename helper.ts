@@ -1,11 +1,16 @@
 import * as TYPES from './types';
 import TileMap from "./TileMap";
+import TileInfo from './TileInfo';
 
 
-export  const render = (state: TYPES.iState) =>{
+export  const render = (state: TYPES.iState) => {
     const grid = new TileMap(state.boardLength);
     state.mapOfBoard = mapBoard(state.boardLength)
+    state.boardArrMap = arrayOfBoard(state.boardLength)
     state.emptyTiles = state.boardLength * state.boardLength
+
+    console.log(state)
+
     document.body.append(grid.element)
     const start = document.getElementById('start')
     const reset = document.getElementById('reset')
@@ -72,6 +77,67 @@ const handleHover = (state: TYPES.iState, e: MouseEvent) => {
     render(state)
 }
 
+const checkHorizontalWin = (state: TYPES.iState): boolean => {
+    const winRow: any = []
+    let returnWinState: boolean = false
+    const sortedArray: any[] = []
+    const referenceObject: TYPES.MapBoard = {}  
+    state.boardArrMap.forEach((element: any) => {
+        if(element.state === state.currentColorState){
+            sortedArray.push(element)
+            referenceObject[element.coordinate] = element
+        }
+    })
+        sortedArray.forEach((element: any) => {
+            const {x,y} = JSON.parse(element.coordinate)
+            const left = JSON.stringify({x:x - 1,y:y})
+            if(referenceObject.hasOwnProperty(left)){
+                winRow.push(left)
+                const right = JSON.stringify({x:x+1, y:y})
+                if(referenceObject.hasOwnProperty(right)){
+                    winRow.push(right)
+                }
+            } 
+        })
+
+const finalSortedArray: any = [...new Set(winRow)]
+
+    try{
+        const finalSortedArray: any = [...new Set(winRow)]
+        let potentialRowWins: any = [JSON.parse(finalSortedArray[0]).y]
+        potentialRowWins[potentialRowWins] = JSON.parse(finalSortedArray[0]).y
+            finalSortedArray.forEach((element: any) => {
+                let el = JSON.parse(element).y
+                if(!potentialRowWins.includes(el)){
+                    potentialRowWins.push(el)
+                } 
+            })  
+        potentialRowWins.forEach((element: any) => {
+            console.log(finalSortedArray.filter((el: any) => JSON.parse(el).y == element))
+            if(finalSortedArray.filter((el: any) => JSON.parse(el).y === element).length === 5){
+                returnWinState = true
+            }
+            console.log(finalSortedArray.filter((el: any) => {
+                JSON.parse(el).y === element
+            }))
+        })
+    }
+    catch {
+        null
+    }
+    return returnWinState
+}
+
+const updateBoardArrayMUTATION = (state: TYPES.iState, coOrdinate: string, color: TYPES.TILECOLOR): void => {
+    const {x,y} = JSON.parse(coOrdinate)
+    state.boardArrMap.forEach((tile) => {
+        const temp = JSON.parse(tile.coordinate)
+        if(temp.x === x && temp.y === y){
+            tile.state = color
+        }
+    })    
+}
+
 const handleClick =(state: TYPES.iState, e?: Event): void => {
     const el: HTMLElement = e?.target as HTMLElement
     if(el.classList.contains('tile')){
@@ -88,7 +154,10 @@ const handleClick =(state: TYPES.iState, e?: Event): void => {
             state.mapOfBoard[coOrdinate] = state.currentColorState as TYPES.TILECOLOR
             state.gameLogicState = state.currentColorState === TYPES.TILECOLOR.BLACK ? TYPES.DYNAMICTEXT.WHITE : TYPES.DYNAMICTEXT.BLACK
             renderDynamicText(state)
+            updateBoardArrayMUTATION(state, el.id, state.currentColorState as TYPES.TILECOLOR)
+            console.log(checkHorizontalWin(state))
             state.currentColorState = toggleColor(state.currentColorState)
+
             
             if(!checkForDraw(state)){
                 state.gameLogicState = TYPES.DYNAMICTEXT.DRAW;
@@ -104,11 +173,10 @@ const handleClick =(state: TYPES.iState, e?: Event): void => {
                     winDirection: checkMatchDirections(checkMatchProps),
                     winRow: [coOrdinate]
                 }
-                console.log(checkWinProps)
-                    if(checkForWin(checkWinProps)){
-                        state.gameLogicState == TYPES.DYNAMICTEXT.WHITE ? state.gameLogicState = TYPES.DYNAMICTEXT.BLACKWIN : state.gameLogicState = TYPES.DYNAMICTEXT.WHITEWIN
-                        renderDynamicText(state)                        
-                    }
+                    // if(checkForWin(checkWinProps)){
+                    //     state.gameLogicState == TYPES.DYNAMICTEXT.WHITE ? state.gameLogicState = TYPES.DYNAMICTEXT.BLACKWIN : state.gameLogicState = TYPES.DYNAMICTEXT.WHITEWIN
+                    //     renderDynamicText(state)                        
+                    // }
             }
         }
     }
@@ -222,6 +290,18 @@ const checkForWin = (props: TYPES.CheckWinProps): boolean => {
 const checkIfTileIsEmpty = (map: TYPES.MapBoard, coOrdinate: string): boolean => {
     return map[coOrdinate] === TYPES.TILECOLOR.EMPTY
 }
+
+export const arrayOfBoard = (length: number): TYPES.TileState[] => {
+    let array: TYPES.TileState[] = []
+    for(let i = 0; i < length; i++){
+        for(let j = 0; j < length; j++){
+            array.push
+            (new TileInfo(TYPES.TILECOLOR.EMPTY, {x: i, y: j}).values)
+        }
+    }
+    return array
+}
+
 
 export const mapBoard = (length: number): TYPES.MapBoard => {
     const map: TYPES.MapBoard = {}

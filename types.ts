@@ -1,10 +1,23 @@
+
 export interface iState{
     currentColorState: string,
     gameLogicState: DYNAMICTEXT,
     mapOfBoard: MapBoard,
     boardLength: number,
+    boardArrMap: TileState[]
     winRow?: string[]
-    emptyTiles?: number
+    emptyTiles?: number,
+    hashMap?: Map<string, string>,
+}
+
+export interface TileCoordinates{
+    x: number,
+    y: number
+}
+
+export interface TileState{
+    state: TILECOLOR,
+    coordinate: string
 }
 
 export interface TargetElement{
@@ -38,10 +51,12 @@ export interface MapBoard {
     [key: string]: TILECOLOR
 }
 
+
 export interface CheckWinProps {
     tileForCheck: string,
     boardLength: number,
     mapOfBoard: MapBoard,
+    arrayOfBoard?: string[],
     n: number,
     originalTile?: string,
     winDirection? : WINCONDITIONS | void | undefined
