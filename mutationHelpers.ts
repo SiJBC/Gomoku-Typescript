@@ -38,26 +38,24 @@ export const verticalWinAlg = ( sortedArray?: string[], referenceObject?: TYPES.
     }
 }
 // diagonalNEWinAlg
-export const diagonalNEWinAlg = ( sortedArray?: string[], referenceObject?: TYPES.MapBoard, winRow?: string[]): boolean => {
+export const diagonalNEWinAlg = ( sortedArray?: string[], referenceObject?: TYPES.MapBoard, winRow?: string[]): void => {
     let diagonalNEWin = false
     if(sortedArray && referenceObject && winRow){
     sortedArray.forEach((element: any) => {
         const {x,y} = JSON.parse(element.coordinate)
-        const upLeft = JSON.stringify({x:x-1,y:y-1})
+        const upLeft = JSON.stringify({x:x+1,y:y+1})
         if(referenceObject.hasOwnProperty(upLeft)){
             winRow.push(upLeft)
-            const downRight = JSON.stringify({x:x+1, y:y+1})
+            const downRight = JSON.stringify({x:x-1, y:y-1})
             if(referenceObject.hasOwnProperty(downRight)){
                 winRow.push(downRight)
             }
         } 
     })
     }
-    return diagonalNEWin
 }
 
 export const diagonalNWWinAlg = ( sortedArray?: string[], referenceObject?: TYPES.MapBoard, winRow?: string[]): void => {
-    let diagonalNWWin = false
     if(sortedArray && referenceObject && winRow){
     sortedArray.forEach((element: any) => {
         const {x,y} = JSON.parse(element.coordinate)
@@ -71,4 +69,14 @@ export const diagonalNWWinAlg = ( sortedArray?: string[], referenceObject?: TYPE
         } 
     })
     }
+}
+
+export const updateBoardArray = (state: TYPES.iState, coOrdinate: string, color: TYPES.TILECOLOR): void => {
+    const {x,y} = JSON.parse(coOrdinate)
+    state.boardArrMap.forEach((tile) => {
+        const temp = JSON.parse(tile.coordinate)
+        if(temp.x === x && temp.y === y){
+            tile.state = color
+        }
+    })    
 }

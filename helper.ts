@@ -12,9 +12,6 @@ export  const render = (state: TYPES.iState) => {
     state.mapOfBoard = mapBoard(state.boardLength)
     state.boardArrMap = arrayOfBoard(state.boardLength)
     state.emptyTiles = state.boardLength * state.boardLength
-
-    console.log(state)
-
     document.body.append(grid.element)
     const start = document.getElementById('start')
     const reset = document.getElementById('reset')
@@ -102,24 +99,28 @@ const checkWin = (state: TYPES.iState): boolean => {
         if(IMMUTABLE.algoHori(winRow)){
             mutableWinState = "horizontal"
         }
+        
         MUTATION.cleanUp()
 
         MUTATION.verticalWinAlg(sortedArray, referenceObject, winRow)
         if(IMMUTABLE.algoVert(winRow)){
             mutableWinState = "vertical"
         }
+        
         MUTATION.cleanUp()
 
         MUTATION.diagonalNEWinAlg(sortedArray, referenceObject, winRow)
-        if(IMMUTABLE.algoDiag(winRow)){
+        if(IMMUTABLE.algoDiagNe(winRow)){
             mutableWinState = "diagonalNe"
         }
+        
         MUTATION.cleanUp()
 
         MUTATION.diagonalNWWinAlg(sortedArray, referenceObject, winRow)
-        if(IMMUTABLE.algoDiag(winRow)){
+        if(IMMUTABLE.algoDiagNw(winRow)){
             mutableWinState = "diagonalNW"
         }
+        
         MUTATION.cleanUp()
         
         if(mutableWinState != undefined){
@@ -129,34 +130,27 @@ const checkWin = (state: TYPES.iState): boolean => {
     return returnWinState
 }
 
-const updateBoardArrayMUTATION = (state: TYPES.iState, coOrdinate: string, color: TYPES.TILECOLOR): void => {
-    const {x,y} = JSON.parse(coOrdinate)
-    state.boardArrMap.forEach((tile) => {
-        const temp = JSON.parse(tile.coordinate)
-        if(temp.x === x && temp.y === y){
-            tile.state = color
-        }
-    })    
-}
+
 
 const handleClick =(state: TYPES.iState, e?: Event): void => {
     const el: HTMLElement = e?.target as HTMLElement
     if(el.classList.contains('tile')){
         const coOrdinate: string = el.dataset.coOrdinate as string
-        if(checkIfTileIsEmpty(state.mapOfBoard, coOrdinate) && state.gameLogicState !== TYPES.DYNAMICTEXT.BLACKWIN && state.gameLogicState !== TYPES.DYNAMICTEXT.WHITEWIN){
-            const checkMatchProps : TYPES.CheckMatchProps = {
-                map: state.mapOfBoard,
-                currentTile: coOrdinate,
-                boardSize: state.boardLength
-            }
-            
+        if(checkIfTileIsEmpty(state.mapOfBoard, coOrdinate) 
+        && state.gameLogicState 
+        !== TYPES.DYNAMICTEXT.BLACKWIN 
+        && state.gameLogicState 
+        !== TYPES.DYNAMICTEXT.WHITEWIN){            
             el.classList.add(state.currentColorState.toLowerCase())
             el.classList.add('no-drop')
             state.mapOfBoard[coOrdinate] = state.currentColorState as TYPES.TILECOLOR
             state.gameLogicState = state.currentColorState === TYPES.TILECOLOR.BLACK ? TYPES.DYNAMICTEXT.WHITE : TYPES.DYNAMICTEXT.BLACK
             renderDynamicText(state)
-            updateBoardArrayMUTATION(state, el.id, state.currentColorState as TYPES.TILECOLOR)
-            console.log(checkWin(state))
+            MUTATION.updateBoardArray(state, el.id, state.currentColorState as TYPES.TILECOLOR)
+            if(checkWin(state)){
+                state.gameLogicState = state.currentColorState === TYPES.TILECOLOR.BLACK ? TYPES.DYNAMICTEXT.BLACKWIN : TYPES.DYNAMICTEXT.WHITEWIN
+                renderDynamicText(state)
+            }
             state.currentColorState = toggleColor(state.currentColorState)
 
             
@@ -165,20 +159,6 @@ const handleClick =(state: TYPES.iState, e?: Event): void => {
                 renderDynamicText(state)
             } 
 
-            if(checkIfMatchInNeighbour(checkMatchProps)){
-                const checkWinProps: TYPES.CheckWinProps = {
-                    tileForCheck: coOrdinate,
-                    boardLength: state.boardLength,
-                    mapOfBoard: state.mapOfBoard,
-                    n: 0,
-                    winDirection: checkMatchDirections(checkMatchProps),
-                    winRow: [coOrdinate]
-                }
-                    // if(checkForWin(checkWinProps)){
-                    //     state.gameLogicState == TYPES.DYNAMICTEXT.WHITE ? state.gameLogicState = TYPES.DYNAMICTEXT.BLACKWIN : state.gameLogicState = TYPES.DYNAMICTEXT.WHITEWIN
-                    //     renderDynamicText(state)                        
-                    // }
-            }
         }
     }
 }
@@ -188,35 +168,8 @@ const toggleColor = (arg: string): string => {
     return arg === TYPES.TILECOLOR.BLACK ? TYPES.TILECOLOR.WHITE : TYPES.TILECOLOR.BLACK
 }
 
-const checkIfMatchInNeighbour = (props: TYPES.CheckMatchProps): boolean => {
-    const { map, currentTile, boardSize } = props
-    return returnNeighbours(currentTile, boardSize).map((neighbour) => {
-        return map[neighbour]
-    }).includes(map[currentTile])
-}
 
-const checkMatchDirections = (props: TYPES.CheckMatchProps): TYPES.WINCONDITIONS | void => {
-    const { map, currentTile, boardSize } = props
-    const matchingNeighbour: string | undefined = returnNeighbours(currentTile, boardSize).find((neighbour) => {
-        return map[neighbour] === map[currentTile]
-    }) 
-    if(matchingNeighbour){
-        const {x, y} = JSON.parse(matchingNeighbour as string)
-        const {x: currentX, y: currentY} = JSON.parse(currentTile)
-        if(x === currentX){
-            return TYPES.WINCONDITIONS.VERTICAL
-        }
-        if(y === currentY){
-            return TYPES.WINCONDITIONS.HORIZONTAL
-        }
-        if(x != currentX && y < currentY){
-            return TYPES.WINCONDITIONS.DIAGONALNE
-        }
-        if(x != currentX && y > currentY){
-            return TYPES.WINCONDITIONS.DIAGONALNW
-        }
-    }        
-}
+
 
 const checkForDraw = (state: TYPES.iState): number | boolean => {
         if(state.emptyTiles) state.emptyTiles = state.emptyTiles - 1;
@@ -224,69 +177,7 @@ const checkForDraw = (state: TYPES.iState): number | boolean => {
         return true
 }
 
-const checkForWin = (props: TYPES.CheckWinProps): boolean => {
-    let { tileForCheck, boardLength, mapOfBoard, n, originalTile, winDirection, propsDirectionCheck, winRow } = props
-    let neighboursCheck: string | undefined;
-    const directionCheck = originalTile != undefined ? JSON.parse(originalTile).x - JSON.parse(tileForCheck).x : 0
-    // winning animations
-    if(n == 4 && propsDirectionCheck == directionCheck){
-        for(const el of winRow){
-            let elEl = document.getElementById(el)
-            elEl?.classList.add('win')
-        }
-        return true
-    }
-    if(n != 4)
-    {   
-        n = n + 1
-        const colorForCheck = mapOfBoard[tileForCheck]
-        const {x, y} = JSON.parse(tileForCheck)
-        switch(winDirection){
-            case TYPES.WINCONDITIONS.HORIZONTAL:
-                neighboursCheck = returnNeighbours(tileForCheck, boardLength)
-                        .find((element: string) => JSON.parse(element).y === y && 
-                        mapOfBoard[element] === colorForCheck && element !== originalTile)
-                        break;
-            case TYPES.WINCONDITIONS.VERTICAL:
-                neighboursCheck = returnNeighbours(tileForCheck, boardLength)
-                        .find((element: string) => JSON.parse(element).x === x && 
-                        mapOfBoard[element] === colorForCheck && 
-                        element !== originalTile)
-                        break;
-            case TYPES.WINCONDITIONS.DIAGONALNE:
-                 neighboursCheck = returnNeighbours(tileForCheck, boardLength)
-                        .find((element: string) => JSON.parse(element).y === y -1 
-                        && ((JSON.parse(element).x === x + 1 || JSON.parse(element).x === x - 1))
-                        && mapOfBoard[element] === colorForCheck 
-                        && element !== originalTile)
-                        break;
-            case TYPES.WINCONDITIONS.DIAGONALNW:
-                neighboursCheck = returnNeighbours(tileForCheck, boardLength)
-                        .find((element: string) => JSON.parse(element).y === y +1 
-                        && ((JSON.parse(element).x === x + 1 || JSON.parse(element).x === x - 1))
-                        && mapOfBoard[element] === colorForCheck 
-                        && element !== originalTile)
-                        break;
-        }
 
-        if(neighboursCheck){
-            winRow.push(neighboursCheck)
-            const newProps: TYPES.CheckWinProps = {
-                tileForCheck: neighboursCheck,
-                boardLength: boardLength,
-                mapOfBoard: mapOfBoard,
-                n: n,
-                originalTile: tileForCheck,
-                winDirection: winDirection,
-                propsDirectionCheck: directionCheck,
-                winRow: winRow
-            }
-           return checkForWin(newProps)
-        }
-    }
-    winRow.length = 0 // reset winRow
-    return false
-}
 
 const checkIfTileIsEmpty = (map: TYPES.MapBoard, coOrdinate: string): boolean => {
     return map[coOrdinate] === TYPES.TILECOLOR.EMPTY
@@ -313,75 +204,5 @@ export const mapBoard = (length: number): TYPES.MapBoard => {
     }
     return map
 }
-
-
-const returnNeighbours = (selectedTile: string, boardLength: number): string[] => {
-    const range = boardLength - 1
-    const {x, y} = JSON.parse(selectedTile)
-    if((x > 0 && x < range) && (y > 0 && y < range))
-    { 
-            return [`{"x":${x-1}, "y":${y-1}}`,
-                    `{"x":${x-1}, "y":${y}}`,
-                    `{"x":${x-1}, "y":${y+1}}`,
-                    `{"x":${x}, "y":${y-1}}`, 
-                    `{"x":${x}, "y":${y+1}}`,
-                    `{"x":${x+1}, "y":${y-1}}`,                    
-                    `{"x":${x+1}, "y":${y}}`,
-                    `{"x":${x+1}, "y":${y+1}}`]
-    
-    }
-    if((x == 0) && (y > 0 && y < range))
-    {
-            return [`{"x":${x}, "y":${y-1}}`,
-                    `{"x":${x}, "y":${y+1}}`,
-                    `{"x":${x+1}, "y":${y-1}}`,
-                    `{"x":${x+1}, "y":${y}}`,
-                    `{"x":${x+1}, "y":${y+1}}`,
-            ]       
-    }
-    if((x > 0 && x < range) && (y == 0))
-    {
-            return [
-            `{"x":${x-1}, "y":${y}}`,
-            `{"x":${x-1}, "y":${y+1}}`,
-            `{"x":${x}, "y":${y+1}}`,
-            `{"x":${x+1}, "y":${y}}`,
-            `{"x":${x+1}, "y":${y+1}}`,
-            ]       
-    }
-    if((x == 0) && (y == 0)){
-        return[
-            `{"x":${x}, "y":${y+1}}`,
-            `{"x":${x+1}, "y":${y}}`,
-            `{"x":${x+1}, "y":${y+1}}`,
-        ]
-    }
-    if((x == range) && (y > 0)){
-        return[
-            `{"x":${x-1}, "y":${y}}`,
-            `{"x":${x-1}, "y":${y+1}}`,
-            `{"x":${x}, "y":${y+1}}`,
-            `{"x":${x}, "y":${y-1}}`
-        ]
-    }
-    if(x == 0 && y == range){
-        return[
-            `{"x":${x}, "y":${y-1}}`,
-            `{"x":${x+1}, "y":${y-1}}`,
-            `{"x":${x+1}, "y":${y}}`,
-            `{"x":${x-1}, "y":${y}}`,
-
-        ]
-    }
-    if(x == range && y == range){
-        return[
-            `{"x":${x-1}, "y":${y}}`,
-            `{"x":${x-1}, "y":${y-1}}`,
-            `{"x":${x}, "y":${y-1}}`,
-        ]
-    }
-    return []
-}
-
 
 
