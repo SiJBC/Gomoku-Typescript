@@ -6,12 +6,15 @@
         "DIAGONALNW",
         "DYNAMICTEXT",
         "Gomoku",
+        "Hori",
+        "MUTABLEWINSTATE",
         "neighbour",
         "Neighbours",
         "PLAYERCOLOR",
         "RETURNCOLOUR",
         "TILECOLOR",
         "WHITEWIN",
+        "WINCHECKS",
         "WINCONDITIONS"
     ]
 }

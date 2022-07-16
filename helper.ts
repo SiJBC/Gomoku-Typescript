@@ -1,6 +1,10 @@
 import * as TYPES from './types';
+import * as MUTATION from './mutationHelpers'
+import * as IMMUTABLE from './immutableHelpers'
 import TileMap from "./TileMap";
 import TileInfo from './TileInfo';
+
+
 
 
 export  const render = (state: TYPES.iState) => {
@@ -77,54 +81,51 @@ const handleHover = (state: TYPES.iState, e: MouseEvent) => {
     render(state)
 }
 
-const checkHorizontalWin = (state: TYPES.iState): boolean => {
+
+
+
+const checkWin = (state: TYPES.iState): boolean => {
     const winRow: any = []
     let returnWinState: boolean = false
-    const sortedArray: any[] = []
+    let mutableWinState: TYPES.MUTABLEWINSTATE = undefined
+    const sortedArray: string[] = []
     const referenceObject: TYPES.MapBoard = {}  
+    
     state.boardArrMap.forEach((element: any) => {
         if(element.state === state.currentColorState){
             sortedArray.push(element)
             referenceObject[element.coordinate] = element
         }
     })
-        sortedArray.forEach((element: any) => {
-            const {x,y} = JSON.parse(element.coordinate)
-            const left = JSON.stringify({x:x - 1,y:y})
-            if(referenceObject.hasOwnProperty(left)){
-                winRow.push(left)
-                const right = JSON.stringify({x:x+1, y:y})
-                if(referenceObject.hasOwnProperty(right)){
-                    winRow.push(right)
-                }
-            } 
-        })
 
-const finalSortedArray: any = [...new Set(winRow)]
+        MUTATION.horizontalWinAlg(sortedArray, referenceObject, winRow)
+        if(IMMUTABLE.algoHori(winRow)){
+            mutableWinState = "horizontal"
+        }
+        MUTATION.cleanUp()
 
-    try{
-        const finalSortedArray: any = [...new Set(winRow)]
-        let potentialRowWins: any = [JSON.parse(finalSortedArray[0]).y]
-        potentialRowWins[potentialRowWins] = JSON.parse(finalSortedArray[0]).y
-            finalSortedArray.forEach((element: any) => {
-                let el = JSON.parse(element).y
-                if(!potentialRowWins.includes(el)){
-                    potentialRowWins.push(el)
-                } 
-            })  
-        potentialRowWins.forEach((element: any) => {
-            console.log(finalSortedArray.filter((el: any) => JSON.parse(el).y == element))
-            if(finalSortedArray.filter((el: any) => JSON.parse(el).y === element).length === 5){
-                returnWinState = true
-            }
-            console.log(finalSortedArray.filter((el: any) => {
-                JSON.parse(el).y === element
-            }))
-        })
-    }
-    catch {
-        null
-    }
+        MUTATION.verticalWinAlg(sortedArray, referenceObject, winRow)
+        if(IMMUTABLE.algoVert(winRow)){
+            mutableWinState = "vertical"
+        }
+        MUTATION.cleanUp()
+
+        MUTATION.diagonalNEWinAlg(sortedArray, referenceObject, winRow)
+        if(IMMUTABLE.algoDiag(winRow)){
+            mutableWinState = "diagonalNe"
+        }
+        MUTATION.cleanUp()
+
+        MUTATION.diagonalNWWinAlg(sortedArray, referenceObject, winRow)
+        if(IMMUTABLE.algoDiag(winRow)){
+            mutableWinState = "diagonalNW"
+        }
+        MUTATION.cleanUp()
+        
+        if(mutableWinState != undefined){
+            returnWinState = true
+        }
+
     return returnWinState
 }
 
@@ -155,7 +156,7 @@ const handleClick =(state: TYPES.iState, e?: Event): void => {
             state.gameLogicState = state.currentColorState === TYPES.TILECOLOR.BLACK ? TYPES.DYNAMICTEXT.WHITE : TYPES.DYNAMICTEXT.BLACK
             renderDynamicText(state)
             updateBoardArrayMUTATION(state, el.id, state.currentColorState as TYPES.TILECOLOR)
-            console.log(checkHorizontalWin(state))
+            console.log(checkWin(state))
             state.currentColorState = toggleColor(state.currentColorState)
 
             
