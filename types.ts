@@ -1,4 +1,4 @@
-export type MUTABLEWINSTATE = 'horizontal' | 'vertical' | 'diagonalNe' | 'diagonalNW' | undefined
+
 export interface iState{
     currentColorState: string,
     gameLogicState: DYNAMICTEXT,
@@ -7,10 +7,11 @@ export interface iState{
     boardArrMap: TileState[]
     winRow?: string[]
     emptyTiles?: number,
-    hashMap?: Map<string, string>,
+    HashMap?: Map<string, string>,
 }
 
 
+export type HashMap = Map<string, string>
 
 export interface TileCoordinates{
     x: number,

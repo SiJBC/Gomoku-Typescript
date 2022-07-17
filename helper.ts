@@ -1,6 +1,6 @@
+
 import * as TYPES from './types';
-import * as MUTATION from './mutationHelpers'
-import * as IMMUTABLE from './immutableHelpers'
+import * as WIN from './winHelpers'
 import TileMap from "./TileMap";
 import TileInfo from './TileInfo';
 
@@ -10,6 +10,7 @@ import TileInfo from './TileInfo';
 export  const render = (state: TYPES.iState) => {
     const grid = new TileMap(state.boardLength);
     state.mapOfBoard = mapBoard(state.boardLength)
+    state.HashMap = hashMap(state.boardLength)
     state.boardArrMap = arrayOfBoard(state.boardLength)
     state.emptyTiles = state.boardLength * state.boardLength
     document.body.append(grid.element)
@@ -79,62 +80,28 @@ const handleHover = (state: TYPES.iState, e: MouseEvent) => {
 }
 
 
+const checkForWin = (state: TYPES.iState, e?: Event): boolean => {
+       
+        // diagonal win conditions
+        if(WIN.diagonalNEWinAlg(state, e) + WIN.diagonalSWWinAlg(state, e) === 6){
+            return true
+        }
 
-
-
-const checkWin = (state: TYPES.iState): boolean => {
-    const winRowHorizontal: any = []
-    const winRowVertical: any = []
-    const winRowDiagonalNE: any = []
-    const winRowDiagonalNW: any = []
-    let returnWinState: boolean = false
-    let mutableWinState: TYPES.MUTABLEWINSTATE = undefined
-    const sortedArray: string[] = []
-    const referenceObject: TYPES.MapBoard = {}  
+        if(WIN.diagonalNWWinAlg(state, e) + WIN.diagonalSEWinAlg(state, e) === 6){
+            return true
+        }
     
-    state.boardArrMap.forEach((element: any) => {
-        if(element.state === state.currentColorState){
-            sortedArray.push(element)
-            referenceObject[element.coordinate] = element
-        }
-    })
-
-        MUTATION.horizontalWinAlg(sortedArray, referenceObject, winRowHorizontal)
-        // console.log(sortedArray, "horizontal")
-        if(IMMUTABLE.algoHori(winRowHorizontal)){
-            mutableWinState = "horizontal"
-        }
-        
-        MUTATION.cleanUp(sortedArray, referenceObject, winRowHorizontal)
-
-        MUTATION.verticalWinAlg(sortedArray, referenceObject, winRowVertical)
-        // console.log(sortedArray, "vertical")
-        if(IMMUTABLE.algoVert(winRowVertical)){
-            mutableWinState = "vertical"
-        }
-        
-        MUTATION.cleanUp(sortedArray, referenceObject, winRowVertical)
-
-        MUTATION.diagonalNEWinAlg(sortedArray, referenceObject, winRowDiagonalNE)
-        
-        if(IMMUTABLE.algoDiagNe(winRowDiagonalNE)){
-            mutableWinState = "diagonalNe"
-        }
-        
-        MUTATION.cleanUp(sortedArray, referenceObject, winRowDiagonalNE)
-
-        MUTATION.diagonalNWWinAlg(sortedArray, referenceObject, winRowDiagonalNW)
-        if(IMMUTABLE.algoDiagNw(winRowDiagonalNW)){
-            mutableWinState = "diagonalNW"
-        }
-        
-        MUTATION.cleanUp(sortedArray, referenceObject, winRowDiagonalNW)
-        
-        if(mutableWinState != undefined){
-            returnWinState = true
+        // vertical win conditions
+        if(WIN.northWinAlg(state, e) + WIN.southWinAlg(state, e) === 6){
+            return true
         }
 
-    return returnWinState
+        // horizontal win conditions
+        if(WIN.eastWinAlg(state, e) + WIN.westWinAlg(state, e) === 6){
+            return true
+        }
+
+        return false
 }
 
 
@@ -151,20 +118,48 @@ const handleClick =(state: TYPES.iState, e?: Event): void => {
             el.classList.add(state.currentColorState.toLowerCase())
             el.classList.add('no-drop')
             state.mapOfBoard[coOrdinate] = state.currentColorState as TYPES.TILECOLOR
-            state.gameLogicState = state.currentColorState === TYPES.TILECOLOR.BLACK ? TYPES.DYNAMICTEXT.WHITE : TYPES.DYNAMICTEXT.BLACK
-            renderDynamicText(state)
-            MUTATION.updateBoardArray(state, el.id, state.currentColorState as TYPES.TILECOLOR)
-            if(checkWin(state)){
-                state.gameLogicState = state.currentColorState === TYPES.TILECOLOR.BLACK ? TYPES.DYNAMICTEXT.BLACKWIN : TYPES.DYNAMICTEXT.WHITEWIN
-                renderDynamicText(state)
-            }
-            state.currentColorState = toggleColor(state.currentColorState)
-
-            
+            state.HashMap?.set(coOrdinate, state.currentColorState)
             if(!checkForDraw(state)){
                 state.gameLogicState = TYPES.DYNAMICTEXT.DRAW;
                 renderDynamicText(state)
             } 
+
+            console.log(checkForWin(state, e))
+            // // diagonal win conditions
+            // console.log(WIN.diagonalNEWinAlg(state, e))
+            // console.log(WIN.diagonalSWWinAlg(state, e))
+            // console.log(WIN.diagonalNWWinAlg(state, e))
+            // console.log(WIN.diagonalSEWinAlg(state, e))
+
+            // // vertical win conditions
+            // console.log(WIN.northWinAlg(state, e))
+            // console.log(WIN.southWinAlg(state, e))
+
+            // // horizontal win conditions
+            // console.log(WIN.eastWinAlg(state, e) + WIN.westWinAlg(state, e) === 6)
+            // if(WIN.eastWinAlg(state, e) + WIN.westWinAlg(state, e) === 6){
+            //     const winText: TYPES.DYNAMICTEXT = state.currentColorState === TYPES.TILECOLOR.WHITE ? TYPES.DYNAMICTEXT.WHITEWIN : TYPES.DYNAMICTEXT.BLACKWIN
+            //     state.gameLogicState = winText
+            //     renderDynamicText(state)
+            //     console.log(state)
+            //     if(state.currentColorState === TYPES.TILECOLOR.WHITE){
+            //         state.gameLogicState = TYPES.DYNAMICTEXT.WHITEWIN
+            //         console.log(state.gameLogicState)
+            //         renderDynamicText(state)        
+            //     }else{
+            //         state.gameLogicState = TYPES.DYNAMICTEXT.BLACKWIN;
+            //         renderDynamicText(state)
+            //     }
+            // }
+            // console.log(WIN.eastWinAlg(state, e))
+            // console.log(WIN.westWinAlg(state, e))
+
+
+            state.gameLogicState = state.currentColorState === TYPES.TILECOLOR.BLACK ? TYPES.DYNAMICTEXT.WHITE : TYPES.DYNAMICTEXT.BLACK
+            renderDynamicText(state)
+
+            // toggle color for next player
+            state.currentColorState = toggleColor(state.currentColorState)
 
         }
     }
@@ -207,6 +202,16 @@ export const mapBoard = (length: number): TYPES.MapBoard => {
     for(let i = 0; i < length; i++){
         for(let j = 0; j < length; j++){
             map[`{"x":${i}, "y":${j}}`] = TYPES.TILECOLOR.EMPTY
+        }
+    }
+    return map
+}
+
+export const hashMap = (length: number): TYPES.HashMap => {
+    const map: TYPES.HashMap = new Map<string, string>()
+    for(let i = 0; i < length; i++){
+        for(let j = 0; j < length; j++){
+            map.set(`{"x":${i}, "y":${j}}`, TYPES.TILECOLOR.EMPTY) 
         }
     }
     return map
