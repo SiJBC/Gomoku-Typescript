@@ -7,14 +7,8 @@ const state: TYPES.iState = {
     gameLogicState: TYPES.DYNAMICTEXT.DEFAULT,
     mapOfBoard: {},
     boardLength: 6,
-    winRow: [],
     emptyTiles: 0,
-    HashMap: new Map(),
-    diagonalNeWinRow:  [],
-    diagonalNWWinRow: [],
-    verticalWinRow: [],
-    horizontalWinRow: [],
-    
+    HashMap: new Map<string, string>(),
 }
 
 

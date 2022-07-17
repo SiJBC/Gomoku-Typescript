@@ -1,32 +1,21 @@
-
-
 export interface iState{
-    diagonalNeWinRow: string[],
-    diagonalNWWinRow: string[],
-    verticalWinRow: string[],
-    horizontalWinRow: string[],
     currentColorState: string,
     gameLogicState: DYNAMICTEXT,
     mapOfBoard: MapBoard,
     boardLength: number,
-    winRow?: string[],
     emptyTiles?: number,
-    HashMap?: Map<string, string>,
+    HashMap?: HashMap,
 }
 
-
 export type HashMap = Map<string, string>
-
 export interface TileCoordinates{
     x: number,
     y: number
 }
-
 export interface TileState{
     state: TILECOLOR,
     coordinate: string
 }
-
 export interface TargetElement{
     value: number 
 }
@@ -40,7 +29,6 @@ export enum DYNAMICTEXT {
     DEFAULT = 'Select the board size'
 }
 
-
 export enum TILECOLOR {
     WHITE = 'WHITE',
     BLACK = 'BLACK',
@@ -53,26 +41,7 @@ export enum WINCONDITIONS {
     DIAGONALNE = 'DIAGONALNE',
     DIAGONALNW = 'DIAGONALNW',
 }
-
 export interface MapBoard {
     [key: string]: TILECOLOR
 }
 
-
-export interface CheckWinProps {
-    tileForCheck: string,
-    boardLength: number,
-    mapOfBoard: MapBoard,
-    arrayOfBoard?: string[],
-    n: number,
-    originalTile?: string,
-    winDirection? : WINCONDITIONS | void | undefined
-    propsDirectionCheck?: number,
-    winRow: any[],
-}
-
-export interface CheckMatchProps {
-    map: MapBoard, 
-    currentTile: string, 
-    boardSize: number
-}

@@ -161,7 +161,7 @@ const checkIfTileIsEmpty = (map: TYPES.MapBoard, coOrdinate: string): boolean =>
 
 
 
-export const mapBoard = (length: number): TYPES.MapBoard => {
+const mapBoard = (length: number): TYPES.MapBoard => {
     const map: TYPES.MapBoard = {}
     for(let i = 0; i < length; i++){
         for(let j = 0; j < length; j++){
@@ -171,7 +171,7 @@ export const mapBoard = (length: number): TYPES.MapBoard => {
     return map
 }
 
-export const hashMap = (length: number): TYPES.HashMap => {
+ const hashMap = (length: number): TYPES.HashMap => {
     const map: TYPES.HashMap = new Map<string, string>()
     for(let i = 0; i < length; i++){
         for(let j = 0; j < length; j++){

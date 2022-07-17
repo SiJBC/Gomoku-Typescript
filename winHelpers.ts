@@ -2,18 +2,22 @@
 
 import * as TYPES from './types'
 
-// winning conditions use an algorithm from 3 functions 
+// winning conditions use an algorithm from 3 functions in 2 directions
 
-// tileCheck
-// winCheck
-// recursiveTileCheck
+// directions
+// vertical north and south
+// horizontal east and west
+// diagonal north west and south east
+// diagonal north east and south west
 
-// the tileCheck functions checks the next tile in one direction
-// the recursion functions will repeat the check while it is true
-// the win check returns the number of times the recursion function was true
-
+// functions
+// tileCheck the tileCheck functions checks the next tile in one direction
+// winCheck the recursion functions will repeat the check while it is true
+// recursiveTileCheck the win check returns the number of times the recursion function was true
 
 // North East to South West diagonal 
+
+// South west check
 
 const diagonalSwTileCheck = (map: Map<string, string> | undefined, color: string, targetTile: string, n: number): number => 
 {
@@ -30,13 +34,6 @@ const diagonalSwTileCheck = (map: Map<string, string> | undefined, color: string
     return 0
 }
 
-export const diagonalSWWinAlg = (state: TYPES.iState, e: any): number => {
-    let swVar = 1
-    const target = e.target.id
-    let numberOfTilesSW: number = swRecursion(state, target, swVar)
-    return numberOfTilesSW
-}
-
 const swRecursion = (state: TYPES.iState, target: string, swVar: number): number => {
     if(diagonalSwTileCheck(state.HashMap, state.currentColorState, target, swVar) === 1){
         return swRecursion(state, target, swVar + 1)
@@ -45,6 +42,14 @@ const swRecursion = (state: TYPES.iState, target: string, swVar: number): number
     }
 }
 
+export const diagonalSWWinAlg = (state: TYPES.iState, e: any): number => {
+    let swVar = 1
+    const target = e.target.id
+    let numberOfTilesSW: number = swRecursion(state, target, swVar)
+    return numberOfTilesSW
+}
+
+// North East check
 const diagonalNeTileCheck = (map: Map<string, string> | undefined, color: string, targetTile: string, n: number): number => 
 {
     const {x,y} = JSON.parse(targetTile)
@@ -78,14 +83,7 @@ export const diagonalNEWinAlg = (state: TYPES.iState, e: any): number => {
 
 // North West to South East diagonal
 
-export const diagonalNWWinAlg = (state: TYPES.iState, e: any): number => {
-    state.diagonalNWWinRow.push(e.target.id)
-    let nwVar = 1
-    const target = e.target.id
-    let numberOfTilesNW: number = nwRecursion(state, target, nwVar)    
-    return numberOfTilesNW
-}
-
+// North West check
 const diagonalNWTileCheck = (map: Map<string, string> | undefined, color: string, targetTile: string, n: number): number => {
     const {x,y} = JSON.parse(targetTile)
     const nwTile = `{\"x\":${x-n}, \"y\":${y+n}}`    
@@ -102,30 +100,20 @@ const diagonalNWTileCheck = (map: Map<string, string> | undefined, color: string
 
 const nwRecursion = (state: TYPES.iState, target: string, nwVar: number): number => {
     if(diagonalNWTileCheck(state.HashMap, state.currentColorState, target, nwVar) === 1){
-        state.diagonalNWWinRow?.push(target)
         return nwRecursion(state, target, nwVar + 1)
     }else{
         return nwVar
     }
 }
 
-export const diagonalSEWinAlg = (state: TYPES.iState, e: any): number => {
-    state.diagonalNWWinRow.push(e.target.id)
-    let seVar = 1
-    const target = e.target.id  
-    let numberOfTilesSE: number = seRecursion(state, target, seVar)    
-    return numberOfTilesSE
+export const diagonalNWWinAlg = (state: TYPES.iState, e: any): number => {
+    let nwVar = 1
+    const target = e.target.id
+    let numberOfTilesNW: number = nwRecursion(state, target, nwVar)    
+    return numberOfTilesNW
 }
 
-const seRecursion = (state: TYPES.iState, target: string, seVar: number): number => {
-    if(diagonalSeTileCheck(state.HashMap, state.currentColorState, target, seVar) === 1){
-        state.diagonalNWWinRow?.push(target)
-        return seRecursion(state, target, seVar + 1)
-    }else{
-        return seVar
-    }
-}
-
+// South East check
 const diagonalSeTileCheck = (map: Map<string, string> | undefined, color: string, targetTile: string, n: number): number => {
     const {x,y} = JSON.parse(targetTile)
     const seTile = `{\"x\":${x+n}, \"y\":${y-n}}`    
@@ -140,8 +128,25 @@ const diagonalSeTileCheck = (map: Map<string, string> | undefined, color: string
     return 0
 }
 
+const seRecursion = (state: TYPES.iState, target: string, seVar: number): number => {
+    if(diagonalSeTileCheck(state.HashMap, state.currentColorState, target, seVar) === 1){
+        return seRecursion(state, target, seVar + 1)
+    }else{
+        return seVar
+    }
+}
+
+export const diagonalSEWinAlg = (state: TYPES.iState, e: any): number => {
+    let seVar = 1
+    const target = e.target.id  
+    let numberOfTilesSE: number = seRecursion(state, target, seVar)    
+    return numberOfTilesSE
+}
+
+
 // South to North Vertical
 
+// Northern Check
 const northTileCheck = (map: Map<string, string> | undefined, color: string, targetTile: string, n: number): number =>{
     const {x,y} = JSON.parse(targetTile)
     const northTile = `{\"x\":${x}, \"y\":${y+n}}`    
@@ -171,6 +176,7 @@ export const northWinAlg = (state: TYPES.iState, e: any): number => {
     return numberOfTilesN
 }
 
+// Southern Check
 const southTileCheck = (map: Map<string, string> | undefined, color: string, targetTile: string, n: number): number => {
     const {x,y} = JSON.parse(targetTile)
     const southTile = `{\"x\":${x}, \"y\":${y-n}}`    
@@ -200,21 +206,7 @@ export const southWinAlg = (state: TYPES.iState, e: any): number => {
     return numberOfTilesS
 }
 
-export const westWinAlg = (state: TYPES.iState, e: any): number => {
-    let wVar = 1
-    const target = e.target.id
-    let numberOfTilesW: number = wRecursion(state, target, wVar)    
-    return numberOfTilesW
-}
-
-const wRecursion = (state: TYPES.iState, target: string, wVar: number): number => {
-    if(westTileCheck(state.HashMap, state.currentColorState, target, wVar) === 1){
-        return wRecursion(state, target, wVar + 1)
-    }else{
-        return wVar
-    }
-}
-
+// western check
 const westTileCheck = (map: Map<string, string> | undefined, color: string, targetTile: string, n: number): number => {
     const {x,y} = JSON.parse(targetTile)
     const westTile = `{\"x\":${x-n}, \"y\":${y}}`    
@@ -229,21 +221,23 @@ const westTileCheck = (map: Map<string, string> | undefined, color: string, targ
     return 0
 }
 
-export const eastWinAlg = (state: TYPES.iState, e: any): number => {
-    let eVar = 1
-    const target = e.target.id
-    let numberOfTilesE: number = eRecursion(state, target, eVar)    
-    return numberOfTilesE
-}
-
-const eRecursion = (state: TYPES.iState, target: string, eVar: number): number => {
-    if(eastTileCheck(state.HashMap, state.currentColorState, target, eVar) === 1){
-        return eRecursion(state, target, eVar + 1)
+const wRecursion = (state: TYPES.iState, target: string, wVar: number): number => {
+    if(westTileCheck(state.HashMap, state.currentColorState, target, wVar) === 1){
+        return wRecursion(state, target, wVar + 1)
     }else{
-        return eVar
+        return wVar
     }
 }
 
+
+export const westWinAlg = (state: TYPES.iState, e: any): number => {
+    let wVar = 1
+    const target = e.target.id
+    let numberOfTilesW: number = wRecursion(state, target, wVar)    
+    return numberOfTilesW
+}
+
+// eastern check
 const eastTileCheck = (map: Map<string, string> | undefined, color: string, targetTile: string, n: number): number => {
     const {x,y} = JSON.parse(targetTile)
     const eastTile = `{\"x\":${x+n}, \"y\":${y}}`    
@@ -257,3 +251,22 @@ const eastTileCheck = (map: Map<string, string> | undefined, color: string, targ
     }
     return 0
 }
+
+const eRecursion = (state: TYPES.iState, target: string, eVar: number): number => {
+    if(eastTileCheck(state.HashMap, state.currentColorState, target, eVar) === 1){
+        return eRecursion(state, target, eVar + 1)
+    }else{
+        return eVar
+    }
+}
+
+
+export const eastWinAlg = (state: TYPES.iState, e: any): number => {
+    let eVar = 1
+    const target = e.target.id
+    let numberOfTilesE: number = eRecursion(state, target, eVar)    
+    return numberOfTilesE
+}
+
+
+
