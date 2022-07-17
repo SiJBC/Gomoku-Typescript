@@ -53,21 +53,31 @@ export const algoVert = (winRow: string[]): boolean => {
 export const algoDiagNe = (winRow: string[]): boolean => {
     let returnWinState: boolean = false 
     try{
+        const fsaObj: any = {}
         const finalSortedArray: any = [...new Set(winRow)]
          finalSortedArray.sort((a: any, b: any) => {
-            return JSON.parse(a).x - JSON.parse(b).x
+            return (JSON.parse(a).x + JSON.parse(b).y) - (JSON.parse(b).x + JSON.parse(b).y)
          })
-         for(let i = 1; i < finalSortedArray.length; i++){
-            if((JSON.parse(finalSortedArray[i]).x - JSON.parse(finalSortedArray[i-1]).x !== 1)
-            || (JSON.parse(finalSortedArray[i]).y - JSON.parse(finalSortedArray[i-1]).y !== 1)){
-                finalSortedArray.remove(finalSortedArray[i])
+        finalSortedArray.forEach((element: any) => {
+            fsaObj[element] = JSON.parse(element)
+        })
+        let beginningIterator = Object.keys(fsaObj).length
+        let winningRow: any = []
+            if(beginningIterator > 0){
+                while(beginningIterator > 0){
+                    let pivotElement = fsaObj[Object.keys(fsaObj)[beginningIterator - 1]]
+                    let searchElement = JSON.stringify({x: pivotElement.x -1, y: pivotElement.y -1})
+                    console.log(searchElement)
+                    if(fsaObj.hasOwnProperty(searchElement)){
+                        winningRow.push(pivotElement)
+                        pivotElement = fsaObj[searchElement]
+                        console.log(pivotElement)
+                    }   
+                    beginningIterator --
+                } 
             }
-         }
-        if(finalSortedArray.length === 5){
-            console.log(finalSortedArray)
-            console.log('algoDiagNe')
-            returnWinState = true
-        }
+        console.log(winningRow)
+        const finalSortedArrLengthCheck: any [] = [] 
     }
     catch {
         null

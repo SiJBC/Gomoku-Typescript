@@ -37,22 +37,22 @@ export const verticalWinAlg = ( sortedArray?: string[], referenceObject?: TYPES.
     })
     }
 }
-// diagonalNEWinAlg
+
 export const diagonalNEWinAlg = ( sortedArray?: string[], referenceObject?: TYPES.MapBoard, winRow?: string[]): void => {
-    let diagonalNEWin = false
     if(sortedArray && referenceObject && winRow){
     sortedArray.forEach((element: any) => {
         const {x,y} = JSON.parse(element.coordinate)
-        const upLeft = JSON.stringify({x:x+1,y:y+1})
+        const upLeft = JSON.stringify({x:x-1,y:y-1})
         if(referenceObject.hasOwnProperty(upLeft)){
             winRow.push(upLeft)
-            const downRight = JSON.stringify({x:x-1, y:y-1})
-            if(referenceObject.hasOwnProperty(downRight)){
-                winRow.push(downRight)
-            }
         } 
+        const downRight = JSON.stringify({x:x+1, y:y+1})
+        if(referenceObject.hasOwnProperty(downRight)){
+            winRow.push(downRight)
+        }
     })
     }
+    // console.log(winRow, "mutation from ne")
 }
 
 export const diagonalNWWinAlg = ( sortedArray?: string[], referenceObject?: TYPES.MapBoard, winRow?: string[]): void => {
@@ -62,7 +62,7 @@ export const diagonalNWWinAlg = ( sortedArray?: string[], referenceObject?: TYPE
         const upRight = JSON.stringify({x:x+1,y:y-1})
         if(referenceObject.hasOwnProperty(upRight)){
             winRow.push(upRight)
-            const downLeft = JSON.stringify({x:x-1, y:y+1})
+            const downLeft = JSON.stringify({x:x-1, y:y-1})
             if(referenceObject.hasOwnProperty(downLeft)){
                 winRow.push(downLeft)
             }

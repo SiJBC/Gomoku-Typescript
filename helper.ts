@@ -81,8 +81,12 @@ const handleHover = (state: TYPES.iState, e: MouseEvent) => {
 
 
 
+
 const checkWin = (state: TYPES.iState): boolean => {
-    const winRow: any = []
+    const winRowHorizontal: any = []
+    const winRowVertical: any = []
+    const winRowDiagonalNE: any = []
+    const winRowDiagonalNW: any = []
     let returnWinState: boolean = false
     let mutableWinState: TYPES.MUTABLEWINSTATE = undefined
     const sortedArray: string[] = []
@@ -95,33 +99,36 @@ const checkWin = (state: TYPES.iState): boolean => {
         }
     })
 
-        MUTATION.horizontalWinAlg(sortedArray, referenceObject, winRow)
-        if(IMMUTABLE.algoHori(winRow)){
+        MUTATION.horizontalWinAlg(sortedArray, referenceObject, winRowHorizontal)
+        // console.log(sortedArray, "horizontal")
+        if(IMMUTABLE.algoHori(winRowHorizontal)){
             mutableWinState = "horizontal"
         }
         
-        MUTATION.cleanUp()
+        MUTATION.cleanUp(sortedArray, referenceObject, winRowHorizontal)
 
-        MUTATION.verticalWinAlg(sortedArray, referenceObject, winRow)
-        if(IMMUTABLE.algoVert(winRow)){
+        MUTATION.verticalWinAlg(sortedArray, referenceObject, winRowVertical)
+        // console.log(sortedArray, "vertical")
+        if(IMMUTABLE.algoVert(winRowVertical)){
             mutableWinState = "vertical"
         }
         
-        MUTATION.cleanUp()
+        MUTATION.cleanUp(sortedArray, referenceObject, winRowVertical)
 
-        MUTATION.diagonalNEWinAlg(sortedArray, referenceObject, winRow)
-        if(IMMUTABLE.algoDiagNe(winRow)){
+        MUTATION.diagonalNEWinAlg(sortedArray, referenceObject, winRowDiagonalNE)
+        
+        if(IMMUTABLE.algoDiagNe(winRowDiagonalNE)){
             mutableWinState = "diagonalNe"
         }
         
-        MUTATION.cleanUp()
+        MUTATION.cleanUp(sortedArray, referenceObject, winRowDiagonalNE)
 
-        MUTATION.diagonalNWWinAlg(sortedArray, referenceObject, winRow)
-        if(IMMUTABLE.algoDiagNw(winRow)){
+        MUTATION.diagonalNWWinAlg(sortedArray, referenceObject, winRowDiagonalNW)
+        if(IMMUTABLE.algoDiagNw(winRowDiagonalNW)){
             mutableWinState = "diagonalNW"
         }
         
-        MUTATION.cleanUp()
+        MUTATION.cleanUp(sortedArray, referenceObject, winRowDiagonalNW)
         
         if(mutableWinState != undefined){
             returnWinState = true
