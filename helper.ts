@@ -2,7 +2,7 @@
 import * as TYPES from './types';
 import * as WIN from './winHelpers'
 import TileMap from "./TileMap";
-import TileInfo from './TileInfo';
+
 
 
 
@@ -11,7 +11,6 @@ export  const render = (state: TYPES.iState) => {
     const grid = new TileMap(state.boardLength);
     state.mapOfBoard = mapBoard(state.boardLength)
     state.HashMap = hashMap(state.boardLength)
-    state.boardArrMap = arrayOfBoard(state.boardLength)
     state.emptyTiles = state.boardLength * state.boardLength
     document.body.append(grid.element)
     const start = document.getElementById('start')
@@ -124,43 +123,17 @@ const handleClick =(state: TYPES.iState, e?: Event): void => {
                 renderDynamicText(state)
             } 
 
-            console.log(checkForWin(state, e))
-            // // diagonal win conditions
-            // console.log(WIN.diagonalNEWinAlg(state, e))
-            // console.log(WIN.diagonalSWWinAlg(state, e))
-            // console.log(WIN.diagonalNWWinAlg(state, e))
-            // console.log(WIN.diagonalSEWinAlg(state, e))
+            if(checkForWin(state, e)){
+                state.gameLogicState = state.currentColorState === TYPES.TILECOLOR.BLACK ? TYPES.DYNAMICTEXT.BLACKWIN : TYPES.DYNAMICTEXT.WHITEWIN
+                renderDynamicText(state)
+            }
 
-            // // vertical win conditions
-            // console.log(WIN.northWinAlg(state, e))
-            // console.log(WIN.southWinAlg(state, e))
-
-            // // horizontal win conditions
-            // console.log(WIN.eastWinAlg(state, e) + WIN.westWinAlg(state, e) === 6)
-            // if(WIN.eastWinAlg(state, e) + WIN.westWinAlg(state, e) === 6){
-            //     const winText: TYPES.DYNAMICTEXT = state.currentColorState === TYPES.TILECOLOR.WHITE ? TYPES.DYNAMICTEXT.WHITEWIN : TYPES.DYNAMICTEXT.BLACKWIN
-            //     state.gameLogicState = winText
-            //     renderDynamicText(state)
-            //     console.log(state)
-            //     if(state.currentColorState === TYPES.TILECOLOR.WHITE){
-            //         state.gameLogicState = TYPES.DYNAMICTEXT.WHITEWIN
-            //         console.log(state.gameLogicState)
-            //         renderDynamicText(state)        
-            //     }else{
-            //         state.gameLogicState = TYPES.DYNAMICTEXT.BLACKWIN;
-            //         renderDynamicText(state)
-            //     }
-            // }
-            // console.log(WIN.eastWinAlg(state, e))
-            // console.log(WIN.westWinAlg(state, e))
-
-
-            state.gameLogicState = state.currentColorState === TYPES.TILECOLOR.BLACK ? TYPES.DYNAMICTEXT.WHITE : TYPES.DYNAMICTEXT.BLACK
-            renderDynamicText(state)
-
-            // toggle color for next player
-            state.currentColorState = toggleColor(state.currentColorState)
-
+            else{
+                state.gameLogicState = state.currentColorState === TYPES.TILECOLOR.BLACK ? TYPES.DYNAMICTEXT.WHITE : TYPES.DYNAMICTEXT.BLACK
+                renderDynamicText(state)
+                // toggle color for next player
+                state.currentColorState = toggleColor(state.currentColorState)
+            }
         }
     }
 }
@@ -185,16 +158,7 @@ const checkIfTileIsEmpty = (map: TYPES.MapBoard, coOrdinate: string): boolean =>
     return map[coOrdinate] === TYPES.TILECOLOR.EMPTY
 }
 
-export const arrayOfBoard = (length: number): TYPES.TileState[] => {
-    let array: TYPES.TileState[] = []
-    for(let i = 0; i < length; i++){
-        for(let j = 0; j < length; j++){
-            array.push
-            (new TileInfo(TYPES.TILECOLOR.EMPTY, {x: i, y: j}).values)
-        }
-    }
-    return array
-}
+
 
 
 export const mapBoard = (length: number): TYPES.MapBoard => {

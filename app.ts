@@ -6,10 +6,15 @@ const state: TYPES.iState = {
     currentColorState: TYPES.TILECOLOR.BLACK,
     gameLogicState: TYPES.DYNAMICTEXT.DEFAULT,
     mapOfBoard: {},
-    boardArrMap: [],
     boardLength: 6,
     winRow: [],
     emptyTiles: 0,
+    HashMap: new Map(),
+    diagonalNeWinRow:  [],
+    diagonalNWWinRow: [],
+    verticalWinRow: [],
+    horizontalWinRow: [],
+    
 }
 
 

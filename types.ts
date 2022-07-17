@@ -1,11 +1,15 @@
 
+
 export interface iState{
+    diagonalNeWinRow: string[],
+    diagonalNWWinRow: string[],
+    verticalWinRow: string[],
+    horizontalWinRow: string[],
     currentColorState: string,
     gameLogicState: DYNAMICTEXT,
     mapOfBoard: MapBoard,
     boardLength: number,
-    boardArrMap: TileState[]
-    winRow?: string[]
+    winRow?: string[],
     emptyTiles?: number,
     HashMap?: Map<string, string>,
 }

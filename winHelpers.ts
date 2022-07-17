@@ -33,8 +33,7 @@ const diagonalSwTileCheck = (map: Map<string, string> | undefined, color: string
 export const diagonalSWWinAlg = (state: TYPES.iState, e: any): number => {
     let swVar = 1
     const target = e.target.id
-    let numberOfTilesSW: number = 1
-    swRecursion(state, target, swVar)
+    let numberOfTilesSW: number = swRecursion(state, target, swVar)
     return numberOfTilesSW
 }
 
@@ -73,7 +72,6 @@ const neRecursion = (state: TYPES.iState, target: string, neVar: number): number
 export const diagonalNEWinAlg = (state: TYPES.iState, e: any): number => {
     let neVar = 1
     const target = e.target.id
-    const map: TYPES.HashMap | undefined = state.HashMap
     let numberOfTilesNE: number = neRecursion(state, target, neVar)    
     return numberOfTilesNE
 }
@@ -81,9 +79,9 @@ export const diagonalNEWinAlg = (state: TYPES.iState, e: any): number => {
 // North West to South East diagonal
 
 export const diagonalNWWinAlg = (state: TYPES.iState, e: any): number => {
+    state.diagonalNWWinRow.push(e.target.id)
     let nwVar = 1
     const target = e.target.id
-    const map: TYPES.HashMap | undefined = state.HashMap
     let numberOfTilesNW: number = nwRecursion(state, target, nwVar)    
     return numberOfTilesNW
 }
@@ -104,6 +102,7 @@ const diagonalNWTileCheck = (map: Map<string, string> | undefined, color: string
 
 const nwRecursion = (state: TYPES.iState, target: string, nwVar: number): number => {
     if(diagonalNWTileCheck(state.HashMap, state.currentColorState, target, nwVar) === 1){
+        state.diagonalNWWinRow?.push(target)
         return nwRecursion(state, target, nwVar + 1)
     }else{
         return nwVar
@@ -111,6 +110,7 @@ const nwRecursion = (state: TYPES.iState, target: string, nwVar: number): number
 }
 
 export const diagonalSEWinAlg = (state: TYPES.iState, e: any): number => {
+    state.diagonalNWWinRow.push(e.target.id)
     let seVar = 1
     const target = e.target.id  
     let numberOfTilesSE: number = seRecursion(state, target, seVar)    
@@ -119,6 +119,7 @@ export const diagonalSEWinAlg = (state: TYPES.iState, e: any): number => {
 
 const seRecursion = (state: TYPES.iState, target: string, seVar: number): number => {
     if(diagonalSeTileCheck(state.HashMap, state.currentColorState, target, seVar) === 1){
+        state.diagonalNWWinRow?.push(target)
         return seRecursion(state, target, seVar + 1)
     }else{
         return seVar
