@@ -1,13 +1,27 @@
 export interface iState{
-    currentColorState: string,
+    currentColorState: TILECOLOR,
     gameLogicState: DYNAMICTEXT,
-    mapOfBoard: MapBoard,
     boardLength: number,
     emptyTiles?: number,
-    HashMap?: HashMap,
+    HashMap: HashMap,
 }
 
 export type HashMap = Map<string, string>
+
+export type EventObject = {
+    target: HTMLElement
+}
+
+export enum DIRECTIONCHECK{
+    EAST = 'east',
+    WEST = 'west',
+    NORTH = 'north',
+    SOUTH = 'south',
+    NORTHEAST = 'northeast',
+    NORTHWEST = 'northwest',
+    SOUTHEAST = 'southeast',
+    SOUTHWEST = 'southwest',
+}
 export interface TileCoordinates{
     x: number,
     y: number
@@ -15,9 +29,6 @@ export interface TileCoordinates{
 export interface TileState{
     state: TILECOLOR,
     coordinate: string
-}
-export interface TargetElement{
-    value: number 
 }
 
 export enum DYNAMICTEXT {
