@@ -21,8 +21,8 @@ export  const render = (state: TYPES.iState) => {
     })
     Array.from({length: 3}).forEach((_, i) => {
         const btn = document.getElementById(`${i + 1}`)
-        btn?.addEventListener('mouseenter', function(e){
-            handleHover(state, e)
+        btn?.addEventListener('click', function(e){
+            handleResizeClick(state, e)
         }
         )
     })
@@ -55,7 +55,7 @@ const handleStart = (state: TYPES.iState, e: MouseEvent) => {
     root?.addEventListener('click', (e) => handleClick(state, e))
 }
 
-const handleHover = (state: TYPES.iState, e: MouseEvent) => {
+const handleResizeClick = (state: TYPES.iState, e: MouseEvent) => {
     const target = e.target as any
     state.boardLength = Number(target.dataset.value)
     const root = document.getElementById('root')
@@ -71,7 +71,7 @@ const handleHover = (state: TYPES.iState, e: MouseEvent) => {
 const handleClick =(state: TYPES.iState, e?: Event): void => {
     const el: HTMLElement = e?.target as HTMLElement
     if(el.classList.contains('tile')){
-        const coOrdinate: string = el.dataset.coOrdinate as string
+        const coOrdinate: string = el.id
         if(checkIfTileIsEmpty(coOrdinate, state.HashMap) 
         && state.gameLogicState 
         !== TYPES.DYNAMICTEXT.BLACKWIN 

@@ -6,7 +6,6 @@ export default class Tile {
         this.coordinate = coordinate;
         this.element = document.createElement('div');
         this.element.classList.add('tile');
-        this.element.setAttribute('data-co-ordinate', this.coordinate);
         this.element.setAttribute('id', this.coordinate)
         this.element.classList.add('tile')
     }

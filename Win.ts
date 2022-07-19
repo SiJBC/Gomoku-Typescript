@@ -14,7 +14,6 @@ export default class Win {
     northwestTile: string
     southwestTile: string
     direction: TYPES.DIRECTIONCHECK
-    winningRowArr: string
 
 
     constructor(state: TYPES.iState, e: TYPES.EventObject | undefined, direction : TYPES.DIRECTIONCHECK){
@@ -32,7 +31,6 @@ export default class Win {
         this.northwestTile = `{\"x\":${this.x-this.n}, \"y\":${this.y+this.n}}`
         this.southwestTile = `{\"x\":${this.x-this.n}, \"y\":${this.y-this.n}}`
         this.northeastTile = `{\"x\":${this.x+this.n}, \"y\":${this.y+this.n}}`
-        this.winningRowArr = `{\"x\":${this.x}, \"y\":${this.y}}`
     }
 
     checkDirection(): string | undefined{
@@ -62,10 +60,6 @@ export default class Win {
         this.n = 1
     }
 
-    setWinningRow(targetTile: string){
-        return this.winningRowArr += '-' + targetTile
-    }
-
     setN(){
         this.n = this.n + 1
         this.eastTile = `{\"x\":${this.x+this.n}, \"y\":${this.y}}`
@@ -85,15 +79,12 @@ export default class Win {
                 return 0
             }
             if(state.HashMap.get(targetTile) === state.currentColorState){ 
-                this.setWinningRow(targetTile)
                 return 1
             }
         }
         return 0
     }
 
-
-    
     recursion(state: TYPES.iState, n?: number): number{
         if(this.n > 5){
             return 0
@@ -106,7 +97,6 @@ export default class Win {
         }
     }
     
-
     get win(): number{
         let returnTotal = this.recursion(this.state, this.n)
         this.resetN()
