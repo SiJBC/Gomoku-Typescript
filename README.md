@@ -35,8 +35,8 @@ The application will prompt the player that's turn it is, as well if a win or dr
 
 In addition to the standard game play I have added in the following features. 
 
-* The board is resizable by clicking the different buttons. 
-* For time complexity the game uses a constant time complexity to check if the win has been achieved. The only iteration is done by checking on initial render which makes the game time complexity at linear. This is achieved by utilizing map() data structures. map() data structures use look up which has a time complexity of 0(1). The algorithm will maximum check the nearest 5 tiles in any of 8 directions with each check have a (1) time complexity. So the time complexity will remain the same regardless of the size of the board. 
+* The board is resizable by clicking the different buttons increasing the ux capability. 
+* For time complexity the game uses a constant time complexity to check if the win has been achieved. The only iteration is done by checking on initial render which makes the game time complexity at linear. This is achieved by utilizing map data structures, map data structures use the get() method that has a time complexity of 0(1). The algorithm will maximum check the nearest 5 tiles in any of 8 directions with each check have a (1) time complexity. So the time complexity will remain the same regardless of the size of the board. 
 
 
 

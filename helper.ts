@@ -38,8 +38,29 @@ const hashMap = (length: number): TYPES.HashMap => {
     return map
 }
 
+const resetState = (state: TYPES.iState) => {
+    state.HashMap = hashMap(state.boardLength)
+    state.emptyTiles = state.boardLength * state.boardLength
+    state.gameLogicState = TYPES.DYNAMICTEXT.BLACK
+    state.currentColorState = TYPES.TILECOLOR.BLACK
+    const root = document.getElementById('root')
+    root?.classList.remove('no-drop')
+    root?.classList.add('grabbing')
+    Array.from({length: 3}).forEach((_, i) => {
+        const el = document.getElementById(`${i + 1}`)
+        el?.classList.remove('hidden')
+    }
+    )
+    root?.addEventListener('click', (e) => handleClick(state, e))
+
+}
+
 const handleReset = (state: TYPES.iState) => {
-    location.reload()
+    const root = document.getElementById('root')
+    document.body.removeChild(root as HTMLElement)
+    resetState(state)
+    render(state)
+    renderDynamicText(state)
 }
 
 const handleStart = (state: TYPES.iState, e: MouseEvent) => {    
