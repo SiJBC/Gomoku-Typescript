@@ -10,7 +10,7 @@ This digital version of the game requires node.js to be installed to run.
 
 To run the game open the root folder of the application:
 
-* use npm install or yarn add 
+* use npm install or yarn install 
 * then npm or yarn start
 * the game can be easily edited in the app.ts file to alter the size of the board.
 * Once the board length has been selected make sure you push start to begin the game
